@@ -1,0 +1,264 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id             String            @id @default(uuid())
+  first_name     String
+  last_name      String
+  birth_date     DateTime?
+  sex            String?
+  phone          String?
+  email          String            @unique
+  password       String 
+  role           String?
+  profile_photo_id String?         @unique
+  created_at     DateTime          @default(now())
+  
+  // Relations
+  profile_photo   Photo?           @relation("UserProfilePhoto", fields: [profile_photo_id], references: [id])
+  reports         Report[]         @relation("ReportCreator")
+  archives        Archive[]        @relation("ArchiveUploader")
+  formats         Format[]         @relation("FormatCreator")
+  trainings       Training[]       @relation("TrainingCreator")
+  photos          Photo[]          @relation("PhotoCreator")
+  events          Event[]          @relation("EventCreator")
+  success_stories SuccessStory[]   @relation("SuccessStoryCreator")
+  intern          Intern?
+  coordinator     Coordinator?
+  social_facilitator SocialFacilitator?
+
+  @@map("users")
+}
+
+model Document {
+  id             String      @id @default(uuid())
+  title          String
+  description    String?
+  id_intern      String?
+  id_archive     String?
+  created_at     DateTime    @default(now())
+  
+  // Relations
+  intern         Intern?     @relation(fields: [id_intern], references: [id])
+  archive        Archive?    @relation(fields: [id_archive], references: [id])
+  
+  @@map("documents")
+}
+
+model Report {
+  id             String      @id @default(uuid())
+  title          String
+  description    String?
+  type           String?
+  id_archive     String?     @unique
+  created_at     DateTime    @default(now())
+  created_by     String
+  
+  // Relations
+  archive        Archive?    @relation(fields: [id_archive], references: [id])
+  creator        User        @relation("ReportCreator", fields: [created_by], references: [id])
+  
+  @@map("reports")
+}
+
+model Archive {
+  id             String      @id @default(uuid())
+  file_name      String
+  file_type      String?
+  mime_type      String?
+  storage_url    String
+  uploaded_at    DateTime    @default(now())
+  uploaded_by    String
+  
+  // Relations
+  uploader       User        @relation("ArchiveUploader", fields: [uploaded_by], references: [id])
+  document       Document[]
+  report         Report?
+  format         Format?
+  training       Training?
+  photo          Photo?
+  
+  @@map("archives")
+}
+
+model Format {
+  id             String      @id @default(uuid())
+  title          String
+  description    String?
+  id_archive     String?     @unique
+  created_at     DateTime    @default(now())
+  created_by     String
+  
+  // Relations
+  archive        Archive?    @relation(fields: [id_archive], references: [id])
+  creator        User        @relation("FormatCreator", fields: [created_by], references: [id])
+  
+  @@map("formats")
+}
+
+model Training {
+  id             String       @id @default(uuid())
+  title          String
+  description    String?
+  id_archive     String?      @unique
+  target_audience String?
+  created_at     DateTime     @default(now())
+  created_by     String
+  
+  // Relations
+  archive        Archive?     @relation(fields: [id_archive], references: [id])
+  creator        User         @relation("TrainingCreator", fields: [created_by], references: [id])
+  
+  @@map("trainings")
+}
+
+model SuccessStory {
+  id             String      @id @default(uuid())
+  title          String
+  description    String?
+  id_photo       String?     @unique
+  created_at     DateTime    @default(now())
+  created_by     String
+  
+  // Relations
+  photo          Photo?      @relation(fields: [id_photo], references: [id])
+  creator        User        @relation("SuccessStoryCreator", fields: [created_by], references: [id])
+  
+  @@map("success_stories")
+}
+
+model Photo {
+  id             String       @id @default(uuid())
+  title          String
+  description    String?
+  id_archive     String?      @unique
+  created_at     DateTime     @default(now())
+  created_by     String
+  
+  // Relations
+  archive        Archive?     @relation(fields: [id_archive], references: [id])
+  creator        User         @relation("PhotoCreator", fields: [created_by], references: [id])
+  success_story  SuccessStory?
+  user_profile   User?        @relation("UserProfilePhoto")
+  event_photos   EventPhoto[]
+  
+  @@map("photos")
+}
+
+model Event {
+  id             String       @id @default(uuid())
+  title          String
+  description    String?
+  created_at     DateTime     @default(now())
+  created_by     String
+  
+  // Relations
+  creator        User         @relation("EventCreator", fields: [created_by], references: [id])
+  event_photos   EventPhoto[]
+  
+  @@map("events")
+}
+
+model EventPhoto {
+  id            String       @id @default(uuid())
+  id_event      String
+  id_photo      String
+  
+  // Relations
+  event         Event        @relation(fields: [id_event], references: [id])
+  photo         Photo        @relation(fields: [id_photo], references: [id])
+  
+  @@map("event_photos")
+}
+
+model Intern {
+  id             String       @id @default(uuid())
+  chid           String       @unique
+  id_user        String       @unique
+  status         Boolean      @default(true)
+  address        String?
+  education_level String?
+  career_name    String?
+  grade          String?
+  name_tutor     String?
+  service        String?
+  documentation  String?
+  id_subproject  String?
+  id_social_facilitator String?
+  id_user_       String?     @unique
+  start_date     DateTime?
+  end_date       DateTime?
+  
+  // Relations
+  user           User         @relation(fields: [id_user], references: [id])
+  subproject     Subproject?  @relation(fields: [id_subproject], references: [id])
+  social_facilitator SocialFacilitator? @relation(fields: [id_social_facilitator], references: [id])
+  documents      Document[]
+  
+  @@map("interns")
+}
+
+model SocialFacilitator {
+  id             String       @id @default(uuid())
+  id_user        String       @unique
+  id_region      String       @unique
+  
+  // Relations
+  user           User         @relation(fields: [id_user], references: [id])
+  region         Region       @relation(fields: [id_region], references: [id])
+  subprojects    Subproject[] @relation("SubprojectSocialFacilitators")
+  interns        Intern[]
+  
+  @@map("social_facilitators")
+}
+
+model Subproject {
+  id             String       @id @default(uuid())
+  name_subproject String
+  id_region      String?
+  id_social_facilitator String?
+  id_coordinator String?      @unique
+  
+  // Relations
+  region        Region?       @relation(fields: [id_region], references: [id])
+  social_facilitator SocialFacilitator? @relation("SubprojectSocialFacilitators", fields: [id_social_facilitator], references: [id])
+  coordinator   Coordinator?  @relation(fields: [id_coordinator], references: [id])
+  interns       Intern[]
+  
+  @@map("subprojects")
+}
+
+model Region {
+  id             String       @id @default(uuid())
+  name_region    String
+  
+  // Relations
+  subprojects    Subproject[]
+  coordinators   Coordinator[]
+  social_facilitators SocialFacilitator[]
+  
+  @@map("regions")
+}
+
+model Coordinator {
+  id             String       @id @default(uuid())
+  id_region      String       @unique
+  id_user        String       @unique
+  
+  // Relations
+  user           User         @relation(fields: [id_user], references: [id])
+  region         Region       @relation(fields: [id_region], references: [id])
+  subproject     Subproject?
+  
+  @@map("coordinators")
+}
