@@ -1,0 +1,1502 @@
+{
+	"info": {
+		"name": "Portal API",
+		"description": "Colección completa de endpoints para la API del Portal",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000/api",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('token', response.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\",\n  \"birth_date\": \"1990-01-01\",\n  \"sex\": \"M\",\n  \"phone\": \"+1234567890\",\n  \"role\": \"user\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": ["{{baseUrl}}"],
+							"path": ["users"]
+						}
+					}
+				},
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": ["{{baseUrl}}"],
+							"path": ["users"]
+						}
+					}
+				},
+				{
+					"name": "Get User by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Interns",
+			"item": [
+				{
+					"name": "Create Intern",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chid\": \"CHID123\",\n  \"id_user\": \"user-uuid\",\n  \"status\": true,\n  \"address\": \"123 Main St\",\n  \"education_level\": \"University\",\n  \"career_name\": \"Computer Science\",\n  \"grade\": \"A\",\n  \"name_tutor\": \"Jane Smith\",\n  \"service\": \"IT Support\",\n  \"documentation\": \"All docs submitted\",\n  \"id_subproject\": \"subproject-uuid\",\n  \"id_social_facilitator\": \"facilitator-uuid\",\n  \"start_date\": \"2024-01-01\",\n  \"end_date\": \"2024-12-31\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/interns",
+							"host": ["{{baseUrl}}"],
+							"path": ["interns"]
+						}
+					}
+				},
+				{
+					"name": "Get All Interns",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/interns",
+							"host": ["{{baseUrl}}"],
+							"path": ["interns"]
+						}
+					}
+				},
+				{
+					"name": "Get Intern by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/interns/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["interns", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Interns by User ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/interns/user/:userId",
+							"host": ["{{baseUrl}}"],
+							"path": ["interns", "user", ":userId"],
+							"variable": [
+								{
+									"key": "userId",
+									"value": ""
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Interns by Facilitator ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/interns/facilitator/:facilitatorId",
+							"host": ["{{baseUrl}}"],
+							"path": ["interns", "facilitator", ":facilitatorId"],
+							"variable": [
+								{
+									"key": "facilitatorId",
+									"value": ""
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Interns by Subproject ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/interns/subproject/:subprojectId",
+							"host": ["{{baseUrl}}"],
+							"path": ["interns", "subproject", ":subprojectId"],
+							"variable": [
+								{
+									"key": "subprojectId",
+									"value": ""
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Documents",
+			"item": [
+				{
+					"name": "Create Document",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Document Title\",\n  \"description\": \"Document description\",\n  \"id_intern\": \"intern-uuid\",\n  \"id_archive\": \"archive-uuid\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/documents",
+							"host": ["{{baseUrl}}"],
+							"path": ["documents"]
+						}
+					}
+				},
+				{
+					"name": "Get All Documents",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/documents",
+							"host": ["{{baseUrl}}"],
+							"path": ["documents"]
+						}
+					}
+				},
+				{
+					"name": "Get Document by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/documents/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["documents", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Documents by Intern ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/documents/intern/:internId",
+							"host": ["{{baseUrl}}"],
+							"path": ["documents", "intern", ":internId"],
+							"variable": [
+								{
+									"key": "internId",
+									"value": ""
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Regions",
+			"item": [
+				{
+					"name": "Create Region",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name_region\": \"Region Name\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/regions",
+							"host": ["{{baseUrl}}"],
+							"path": ["regions"]
+						}
+					}
+				},
+				{
+					"name": "Get All Regions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/regions",
+							"host": ["{{baseUrl}}"],
+							"path": ["regions"]
+						}
+					}
+				},
+				{
+					"name": "Get Region by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/regions/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["regions", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Subprojects",
+			"item": [
+				{
+					"name": "Create Subproject",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name_subproject\": \"Subproject Name\",\n  \"id_region\": \"region-uuid\",\n  \"id_social_facilitator\": \"social-facilitator-uuid\",\n  \"id_coordinator\": \"coordinator-uuid\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/subprojects",
+							"host": ["{{baseUrl}}"],
+							"path": ["subprojects"]
+						}
+					}
+				},
+				{
+					"name": "Get All Subprojects",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subprojects",
+							"host": ["{{baseUrl}}"],
+							"path": ["subprojects"]
+						}
+					}
+				},
+				{
+					"name": "Get Subproject by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subprojects/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["subprojects", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Subprojects by Region ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subprojects/region/:regionId",
+							"host": ["{{baseUrl}}"],
+							"path": ["subprojects", "region", ":regionId"],
+							"variable": [
+								{
+									"key": "regionId",
+									"value": ""
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Coordinators",
+			"item": [
+				{
+					"name": "Create Coordinator",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id_user\": \"user-uuid\",\n  \"id_region\": \"region-uuid\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/coordinators",
+							"host": ["{{baseUrl}}"],
+							"path": ["coordinators"]
+						}
+					}
+				},
+				{
+					"name": "Get All Coordinators",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/coordinators",
+							"host": ["{{baseUrl}}"],
+							"path": ["coordinators"]
+						}
+					}
+				},
+				{
+					"name": "Get Coordinator by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/coordinators/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["coordinators", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Coordinator by User ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/coordinators/user/:userId",
+							"host": ["{{baseUrl}}"],
+							"path": ["coordinators", "user", ":userId"],
+							"variable": [
+								{
+									"key": "userId",
+									"value": ""
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Social Facilitators",
+			"item": [
+				{
+					"name": "Create Social Facilitator",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id_user\": \"user-uuid\",\n  \"id_subproject\": \"subproject-uuid\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/social-facilitators",
+							"host": ["{{baseUrl}}"],
+							"path": ["social-facilitators"]
+						}
+					}
+				},
+				{
+					"name": "Get All Social Facilitators",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/social-facilitators",
+							"host": ["{{baseUrl}}"],
+							"path": ["social-facilitators"]
+						}
+					}
+				},
+				{
+					"name": "Get Social Facilitator by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/social-facilitators/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["social-facilitators", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Social Facilitator by User ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/social-facilitators/user/:userId",
+							"host": ["{{baseUrl}}"],
+							"path": ["social-facilitators", "user", ":userId"],
+							"variable": [
+								{
+									"key": "userId",
+									"value": ""
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Social Facilitators by Subproject ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/social-facilitators/subproject/:subprojectId",
+							"host": ["{{baseUrl}}"],
+							"path": ["social-facilitators", "subproject", ":subprojectId"],
+							"variable": [
+								{
+									"key": "subprojectId",
+									"value": ""
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Archives",
+			"item": [
+				{
+					"name": "Create Archive",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"file_name\": \"document.pdf\",\n  \"file_type\": \"pdf\",\n  \"mime_type\": \"application/pdf\",\n  \"storage_url\": \"https://storage.example.com/files/document.pdf\",\n  \"uploaded_by\": \"user-uuid\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/archives",
+							"host": ["{{baseUrl}}"],
+							"path": ["archives"]
+						}
+					}
+				},
+				{
+					"name": "Get All Archives",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/archives",
+							"host": ["{{baseUrl}}"],
+							"path": ["archives"]
+						}
+					}
+				},
+				{
+					"name": "Get Archive by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/archives/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["archives", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Archives by Uploader User ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/archives/uploader/:userId",
+							"host": ["{{baseUrl}}"],
+							"path": ["archives", "uploader", ":userId"],
+							"variable": [
+								{
+									"key": "userId",
+									"value": ""
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Archives by File Type",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/archives/type/:fileType",
+							"host": ["{{baseUrl}}"],
+							"path": ["archives", "type", ":fileType"],
+							"variable": [
+								{
+									"key": "fileType",
+									"value": ""
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Formats",
+			"item": [
+				{
+					"name": "Create Format",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Format Title\",\n  \"description\": \"Format description\",\n  \"id_archive\": \"archive-uuid\",\n  \"created_by\": \"user-uuid\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/formats",
+							"host": ["{{baseUrl}}"],
+							"path": ["formats"]
+						}
+					}
+				},
+				{
+					"name": "Get All Formats",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/formats",
+							"host": ["{{baseUrl}}"],
+							"path": ["formats"]
+						}
+					}
+				},
+				{
+					"name": "Get Format by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/formats/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["formats", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Formats by Creator ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/formats/creator/:creatorId",
+							"host": ["{{baseUrl}}"],
+							"path": ["formats", "creator", ":creatorId"],
+							"variable": [
+								{
+									"key": "creatorId",
+									"value": ""
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Trainings",
+			"item": [
+				{
+					"name": "Create Training",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Training Title\",\n  \"description\": \"Training description\",\n  \"id_archive\": \"archive-uuid\",\n  \"target_audience\": \"Interns\",\n  \"created_by\": \"user-uuid\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/trainings",
+							"host": ["{{baseUrl}}"],
+							"path": ["trainings"]
+						}
+					}
+				},
+				{
+					"name": "Get All Trainings",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/trainings",
+							"host": ["{{baseUrl}}"],
+							"path": ["trainings"]
+						}
+					}
+				},
+				{
+					"name": "Get Training by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/trainings/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["trainings", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Trainings by Creator ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/trainings/creator/:creatorId",
+							"host": ["{{baseUrl}}"],
+							"path": ["trainings", "creator", ":creatorId"],
+							"variable": [
+								{
+									"key": "creatorId",
+									"value": ""
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Photos",
+			"item": [
+				{
+					"name": "Create Photo",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Photo Title\",\n  \"description\": \"Photo description\",\n  \"id_archive\": \"archive-uuid\",\n  \"created_by\": \"user-uuid\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/photos",
+							"host": ["{{baseUrl}}"],
+							"path": ["photos"]
+						}
+					}
+				},
+				{
+					"name": "Get All Photos",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/photos",
+							"host": ["{{baseUrl}}"],
+							"path": ["photos"]
+						}
+					}
+				},
+				{
+					"name": "Get Photo by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/photos/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["photos", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Photos by Creator ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/photos/creator/:creatorId",
+							"host": ["{{baseUrl}}"],
+							"path": ["photos", "creator", ":creatorId"],
+							"variable": [
+								{
+									"key": "creatorId",
+									"value": ""
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Events",
+			"item": [
+				{
+					"name": "Create Event",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Event Title\",\n  \"description\": \"Event description\",\n  \"created_by\": \"user-uuid\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/events",
+							"host": ["{{baseUrl}}"],
+							"path": ["events"]
+						}
+					}
+				},
+				{
+					"name": "Get All Events",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/events",
+							"host": ["{{baseUrl}}"],
+							"path": ["events"]
+						}
+					}
+				},
+				{
+					"name": "Get Event by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/events/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["events", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Events by Creator ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/events/creator/:creatorId",
+							"host": ["{{baseUrl}}"],
+							"path": ["events", "creator", ":creatorId"],
+							"variable": [
+								{
+									"key": "creatorId",
+									"value": ""
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Event Photos",
+			"item": [
+				{
+					"name": "Create Event Photo",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id_event\": \"event-uuid\",\n  \"id_photo\": \"photo-uuid\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/event-photos",
+							"host": ["{{baseUrl}}"],
+							"path": ["event-photos"]
+						}
+					}
+				},
+				{
+					"name": "Get Event Photos by Event ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/event-photos/event/:eventId",
+							"host": ["{{baseUrl}}"],
+							"path": ["event-photos", "event", ":eventId"],
+							"variable": [
+								{
+									"key": "eventId",
+									"value": ""
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Event Photos by Photo ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/event-photos/photo/:photoId",
+							"host": ["{{baseUrl}}"],
+							"path": ["event-photos", "photo", ":photoId"],
+							"variable": [
+								{
+									"key": "photoId",
+									"value": ""
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Event Photo",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/event-photos/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["event-photos", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Reports",
+			"item": [
+				{
+					"name": "Create Report",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Report Title\",\n  \"description\": \"Report description\",\n  \"type\": \"Monthly\",\n  \"id_archive\": \"archive-uuid\",\n  \"created_by\": \"user-uuid\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reports",
+							"host": ["{{baseUrl}}"],
+							"path": ["reports"]
+						}
+					}
+				},
+				{
+					"name": "Get All Reports",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/reports",
+							"host": ["{{baseUrl}}"],
+							"path": ["reports"]
+						}
+					}
+				},
+				{
+					"name": "Get Report by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/reports/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["reports", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Reports by Creator ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/reports/creator/:creatorId",
+							"host": ["{{baseUrl}}"],
+							"path": ["reports", "creator", ":creatorId"],
+							"variable": [
+								{
+									"key": "creatorId",
+									"value": ""
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Reports by Type",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/reports/type/:type",
+							"host": ["{{baseUrl}}"],
+							"path": ["reports", "type", ":type"],
+							"variable": [
+								{
+									"key": "type",
+									"value": ""
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Success Stories",
+			"item": [
+				{
+					"name": "Create Success Story",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Success Story Title\",\n  \"description\": \"Success story description\",\n  \"id_photo\": \"photo-uuid\",\n  \"created_by\": \"user-uuid\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/success-stories",
+							"host": ["{{baseUrl}}"],
+							"path": ["success-stories"]
+						}
+					}
+				},
+				{
+					"name": "Get All Success Stories",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/success-stories",
+							"host": ["{{baseUrl}}"],
+							"path": ["success-stories"]
+						}
+					}
+				},
+				{
+					"name": "Get Success Story by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/success-stories/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["success-stories", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Success Stories by Creator ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/success-stories/creator/:creatorId",
+							"host": ["{{baseUrl}}"],
+							"path": ["success-stories", "creator", ":creatorId"],
+							"variable": [
+								{
+									"key": "creatorId",
+									"value": ""
+								}
+							]
+						}
+					}
+				}
+			]
+		}
+	]
+}
