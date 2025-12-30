@@ -3,6 +3,7 @@ import { CreateSuccessStoryUseCase } from '../../../application/use-cases/succes
 import { GetAllSuccessStoriesUseCase } from '../../../application/use-cases/successStory/GetAllSuccessStoriesUseCase';
 import { GetSuccessStoryByIdUseCase } from '../../../application/use-cases/successStory/GetSuccessStoryByIdUseCase';
 import { GetSuccessStoriesByCreatorIdUseCase } from '../../../application/use-cases/successStory/GetSuccessStoriesByCreatorIdUseCase';
+import { UpdateSuccessStoryUseCase } from '../../../application/use-cases/successStory/UpdateSuccessStoryUseCase';
 import { ResourceNotFoundError } from '../../../shared/errors/CustomErrors';
 
 export class SuccessStoryController {
@@ -10,7 +11,8 @@ export class SuccessStoryController {
     private readonly createSuccessStoryUseCase: CreateSuccessStoryUseCase,
     private readonly getAllSuccessStoriesUseCase: GetAllSuccessStoriesUseCase,
     private readonly getSuccessStoryByIdUseCase: GetSuccessStoryByIdUseCase,
-    private readonly getSuccessStoriesByCreatorIdUseCase: GetSuccessStoriesByCreatorIdUseCase
+    private readonly getSuccessStoriesByCreatorIdUseCase: GetSuccessStoriesByCreatorIdUseCase,
+    private readonly updateSuccessStoryUseCase: UpdateSuccessStoryUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<Response> {
@@ -97,6 +99,34 @@ export class SuccessStoryController {
       })));
     } catch (error) {
       console.error('Error getting success stories by creator ID:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async update(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      const { title, description, id_photo } = req.body;
+
+      const successStory = await this.updateSuccessStoryUseCase.execute(id, {
+        title,
+        description,
+        id_photo
+      });
+
+      return res.status(200).json({
+        id: successStory.id,
+        title: successStory.title,
+        description: successStory.description,
+        id_photo: successStory.photoId,
+        created_at: successStory.createdAt,
+        created_by: successStory.createdBy
+      });
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error('Error updating success story:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   }

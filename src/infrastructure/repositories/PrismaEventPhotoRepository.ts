@@ -75,6 +75,24 @@ export class PrismaEventPhotoRepository implements EventPhotoRepository {
     });
   }
 
+  async update(eventPhoto: EventPhoto): Promise<EventPhoto> {
+    const data = eventPhoto.toJSON();
+
+    const updatedRecord = await prisma.eventPhoto.update({
+      where: { id: data.id },
+      data: {
+        id_event: data.id_event,
+        id_photo: data.id_photo
+      }
+    });
+
+    return EventPhoto.create({
+      id: updatedRecord.id,
+      id_event: updatedRecord.id_event,
+      id_photo: updatedRecord.id_photo
+    });
+  }
+
   async delete(id: string): Promise<void> {
     await prisma.eventPhoto.delete({
       where: { id }

@@ -4,6 +4,7 @@ import { GetAllSocialFacilitatorsUseCase } from '../../../application/use-cases/
 import { GetSocialFacilitatorByIdUseCase } from '../../../application/use-cases/socialFacilitator/GetSocialFacilitatorByIdUseCase';
 import { GetSocialFacilitatorByUserIdUseCase } from '../../../application/use-cases/socialFacilitator/GetSocialFacilitatorByUserIdUseCase';
 import { GetSocialFacilitatorsBySubprojectIdUseCase } from '../../../application/use-cases/socialFacilitator/GetSocialFacilitatorsBySubprojectIdUseCase';
+import { UpdateSocialFacilitatorUseCase } from '../../../application/use-cases/socialFacilitator/UpdateSocialFacilitatorUseCase';
 import { ResourceNotFoundError } from '../../../shared/errors/CustomErrors';
 
 export class SocialFacilitatorController {
@@ -12,7 +13,8 @@ export class SocialFacilitatorController {
     private readonly getAllSocialFacilitatorsUseCase: GetAllSocialFacilitatorsUseCase,
     private readonly getSocialFacilitatorByIdUseCase: GetSocialFacilitatorByIdUseCase,
     private readonly getSocialFacilitatorByUserIdUseCase: GetSocialFacilitatorByUserIdUseCase,
-    private readonly getSocialFacilitatorsBySubprojectIdUseCase: GetSocialFacilitatorsBySubprojectIdUseCase
+    private readonly getSocialFacilitatorsBySubprojectIdUseCase: GetSocialFacilitatorsBySubprojectIdUseCase,
+    private readonly updateSocialFacilitatorUseCase: UpdateSocialFacilitatorUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<Response> {
@@ -110,6 +112,30 @@ export class SocialFacilitatorController {
       })));
     } catch (error) {
       console.error('Error getting social facilitators by subproject ID:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async update(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      const { id_user, id_region } = req.body;
+
+      const socialFacilitator = await this.updateSocialFacilitatorUseCase.execute(id, {
+        id_user,
+        id_region
+      });
+
+      return res.status(200).json({
+        id: socialFacilitator.id,
+        id_user: socialFacilitator.userId,
+        id_region: socialFacilitator.regionId
+      });
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error('Error updating social facilitator:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   }

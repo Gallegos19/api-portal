@@ -4,6 +4,7 @@ import { CreateDocumentUseCase } from '../../../application/use-cases/document/C
 import { GetAllDocumentsUseCase } from '../../../application/use-cases/document/GetAllDocumentsUseCase';
 import { GetDocumentByIdUseCase } from '../../../application/use-cases/document/GetDocumentByIdUseCase';
 import { GetDocumentsByInternIdUseCase } from '../../../application/use-cases/document/GetDocumentsByInternIdUseCase';
+import { UpdateDocumentUseCase } from '../../../application/use-cases/document/UpdateDocumentUseCase';
 import { PrismaDocumentRepository } from '../../../infrastructure/repositories/PrismaDocumentRepository';
 import { authMiddleware } from '../middlewares/authMiddleware';
 
@@ -15,13 +16,15 @@ const createDocumentUseCase = new CreateDocumentUseCase(documentRepository);
 const getAllDocumentsUseCase = new GetAllDocumentsUseCase(documentRepository);
 const getDocumentByIdUseCase = new GetDocumentByIdUseCase(documentRepository);
 const getDocumentsByInternIdUseCase = new GetDocumentsByInternIdUseCase(documentRepository);
+const updateDocumentUseCase = new UpdateDocumentUseCase(documentRepository);
 
 // Controller
 const documentController = new DocumentController(
   createDocumentUseCase,
   getAllDocumentsUseCase,
   getDocumentByIdUseCase,
-  getDocumentsByInternIdUseCase
+  getDocumentsByInternIdUseCase,
+  updateDocumentUseCase
 );
 
 // Routes
@@ -113,6 +116,48 @@ documentRoutes.get('/', authMiddleware, async (req, res) => { await documentCont
  *         description: Error del servidor
  */
 documentRoutes.get('/:id', authMiddleware, async (req, res) => { await documentController.getById(req, res); });
+
+/**
+ * @swagger
+ * /api/documents/{id}:
+ *   put:
+ *     summary: Actualizar un documento
+ *     tags: [Documentos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del documento
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Documento actualizado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Document'
+ *       404:
+ *         description: Documento no encontrado
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+documentRoutes.put('/:id', authMiddleware, async (req, res) => { await documentController.update(req, res); });
 
 /**
  * @swagger

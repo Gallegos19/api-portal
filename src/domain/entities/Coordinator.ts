@@ -21,7 +21,18 @@ export interface CoordinatorProps {
 
   get regionId(): string {
     return this.props.id_region;
-  }  // Static factory method
+  }
+
+  // Methods to update properties
+  updateUserId(userId: string): void {
+    this.props.id_user = userId;
+  }
+
+  updateRegionId(regionId: string): void {
+    this.props.id_region = regionId;
+  }
+
+  // Static factory method
   static create(props: Omit<CoordinatorProps, 'id'> & { id?: string }): Coordinator {
     return new Coordinator({
       id: props.id || crypto.randomUUID(),

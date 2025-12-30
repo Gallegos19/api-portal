@@ -4,6 +4,7 @@ import { CreateTrainingUseCase } from '../../../application/use-cases/training/C
 import { GetAllTrainingsUseCase } from '../../../application/use-cases/training/GetAllTrainingsUseCase';
 import { GetTrainingByIdUseCase } from '../../../application/use-cases/training/GetTrainingByIdUseCase';
 import { GetTrainingsByCreatorIdUseCase } from '../../../application/use-cases/training/GetTrainingsByCreatorIdUseCase';
+import { UpdateTrainingUseCase } from '../../../application/use-cases/training/UpdateTrainingUseCase';
 import { PrismaTrainingRepository } from '../../../infrastructure/repositories/PrismaTrainingRepository';
 import { PrismaUserRepository } from '../../../infrastructure/repositories/PrismaUserRepository';
 import { PrismaArchiveRepository } from '../../../infrastructure/repositories/PrismaArchiveRepository';
@@ -23,13 +24,15 @@ const createTrainingUseCase = new CreateTrainingUseCase(
 const getAllTrainingsUseCase = new GetAllTrainingsUseCase(trainingRepository);
 const getTrainingByIdUseCase = new GetTrainingByIdUseCase(trainingRepository);
 const getTrainingsByCreatorIdUseCase = new GetTrainingsByCreatorIdUseCase(trainingRepository);
+const updateTrainingUseCase = new UpdateTrainingUseCase(trainingRepository);
 
 // Controller
 const trainingController = new TrainingController(
   createTrainingUseCase,
   getAllTrainingsUseCase,
   getTrainingByIdUseCase,
-  getTrainingsByCreatorIdUseCase
+  getTrainingsByCreatorIdUseCase,
+  updateTrainingUseCase
 );
 
 // Routes
@@ -124,6 +127,50 @@ trainingRoutes.get('/', authMiddleware, async (req, res) => { await trainingCont
  *         description: Error del servidor
  */
 trainingRoutes.get('/:id', authMiddleware, async (req, res) => { await trainingController.getById(req, res); });
+
+/**
+ * @swagger
+ * /api/trainings/{id}:
+ *   put:
+ *     summary: Actualizar una capacitación
+ *     tags: [Capacitaciones]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la capacitación
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               id_archive:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Capacitación actualizada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Training'
+ *       404:
+ *         description: Capacitación no encontrada
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+trainingRoutes.put('/:id', authMiddleware, async (req, res) => { await trainingController.update(req, res); });
 
 /**
  * @swagger

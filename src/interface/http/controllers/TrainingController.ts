@@ -3,6 +3,7 @@ import { CreateTrainingUseCase } from '../../../application/use-cases/training/C
 import { GetAllTrainingsUseCase } from '../../../application/use-cases/training/GetAllTrainingsUseCase';
 import { GetTrainingByIdUseCase } from '../../../application/use-cases/training/GetTrainingByIdUseCase';
 import { GetTrainingsByCreatorIdUseCase } from '../../../application/use-cases/training/GetTrainingsByCreatorIdUseCase';
+import { UpdateTrainingUseCase } from '../../../application/use-cases/training/UpdateTrainingUseCase';
 import { ResourceNotFoundError } from '../../../shared/errors/CustomErrors';
 
 export class TrainingController {
@@ -10,7 +11,8 @@ export class TrainingController {
     private readonly createTrainingUseCase: CreateTrainingUseCase,
     private readonly getAllTrainingsUseCase: GetAllTrainingsUseCase,
     private readonly getTrainingByIdUseCase: GetTrainingByIdUseCase,
-    private readonly getTrainingsByCreatorIdUseCase: GetTrainingsByCreatorIdUseCase
+    private readonly getTrainingsByCreatorIdUseCase: GetTrainingsByCreatorIdUseCase,
+    private readonly updateTrainingUseCase: UpdateTrainingUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<Response> {
@@ -102,6 +104,36 @@ export class TrainingController {
       })));
     } catch (error) {
       console.error('Error getting trainings by creator ID:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async update(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      const { title, description, id_archive, target_audience } = req.body;
+
+      const training = await this.updateTrainingUseCase.execute(id, {
+        title,
+        description,
+        id_archive,
+        target_audience
+      });
+
+      return res.status(200).json({
+        id: training.id,
+        title: training.title,
+        description: training.description,
+        id_archive: training.archiveId,
+        target_audience: training.targetAudience,
+        created_at: training.createdAt,
+        created_by: training.createdBy
+      });
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error('Error updating training:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   }

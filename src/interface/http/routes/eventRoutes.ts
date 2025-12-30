@@ -4,6 +4,7 @@ import { CreateEventUseCase } from '../../../application/use-cases/event/CreateE
 import { GetAllEventsUseCase } from '../../../application/use-cases/event/GetAllEventsUseCase';
 import { GetEventByIdUseCase } from '../../../application/use-cases/event/GetEventByIdUseCase';
 import { GetEventsByCreatorIdUseCase } from '../../../application/use-cases/event/GetEventsByCreatorIdUseCase';
+import { UpdateEventUseCase } from '../../../application/use-cases/event/UpdateEventUseCase';
 import { PrismaEventRepository } from '../../../infrastructure/repositories/PrismaEventRepository';
 import { PrismaUserRepository } from '../../../infrastructure/repositories/PrismaUserRepository';
 import { authMiddleware } from '../middlewares/authMiddleware';
@@ -20,13 +21,15 @@ const createEventUseCase = new CreateEventUseCase(
 const getAllEventsUseCase = new GetAllEventsUseCase(eventRepository);
 const getEventByIdUseCase = new GetEventByIdUseCase(eventRepository);
 const getEventsByCreatorIdUseCase = new GetEventsByCreatorIdUseCase(eventRepository);
+const updateEventUseCase = new UpdateEventUseCase(eventRepository);
 
 // Controller
 const eventController = new EventController(
   createEventUseCase,
   getAllEventsUseCase,
   getEventByIdUseCase,
-  getEventsByCreatorIdUseCase
+  getEventsByCreatorIdUseCase,
+  updateEventUseCase
 );
 
 // Routes
@@ -153,5 +156,43 @@ eventRoutes.get('/:id', authMiddleware, async (req, res) => { await eventControl
  *         description: Error del servidor
  */
 eventRoutes.get('/creator/:creatorId', authMiddleware, async (req, res) => { await eventController.getByCreatorId(req, res); });
+
+/**
+ * @swagger
+ * /api/events/{id}:
+ *   put:
+ *     summary: Actualizar un evento
+ *     tags: [Eventos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del evento
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Evento actualizado exitosamente
+ *       404:
+ *         description: Evento no encontrado
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+eventRoutes.put('/:id', authMiddleware, async (req, res) => { await eventController.update(req, res); });
 
 export { eventRoutes };

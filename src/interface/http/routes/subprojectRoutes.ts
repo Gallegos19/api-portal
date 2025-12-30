@@ -4,6 +4,7 @@ import { CreateSubprojectUseCase } from '../../../application/use-cases/subproje
 import { GetAllSubprojectsUseCase } from '../../../application/use-cases/subproject/GetAllSubprojectsUseCase';
 import { GetSubprojectByIdUseCase } from '../../../application/use-cases/subproject/GetSubprojectByIdUseCase';
 import { GetSubprojectsByRegionIdUseCase } from '../../../application/use-cases/subproject/GetSubprojectsByRegionIdUseCase';
+import { UpdateSubprojectUseCase } from '../../../application/use-cases/subproject/UpdateSubprojectUseCase';
 import { PrismaSubprojectRepository } from '../../../infrastructure/repositories/PrismaSubprojectRepository';
 import { PrismaRegionRepository } from '../../../infrastructure/repositories/PrismaRegionRepository';
 import { PrismaCoordinatorRepository } from '../../../infrastructure/repositories/PrismaCoordinatorRepository';
@@ -26,13 +27,15 @@ const createSubprojectUseCase = new CreateSubprojectUseCase(
 const getAllSubprojectsUseCase = new GetAllSubprojectsUseCase(subprojectRepository);
 const getSubprojectByIdUseCase = new GetSubprojectByIdUseCase(subprojectRepository);
 const getSubprojectsByRegionIdUseCase = new GetSubprojectsByRegionIdUseCase(subprojectRepository);
+const updateSubprojectUseCase = new UpdateSubprojectUseCase(subprojectRepository);
 
 // Controller
 const subprojectController = new SubprojectController(
   createSubprojectUseCase,
   getAllSubprojectsUseCase,
   getSubprojectByIdUseCase,
-  getSubprojectsByRegionIdUseCase
+  getSubprojectsByRegionIdUseCase,
+  updateSubprojectUseCase
 );
 
 // Routes
@@ -122,6 +125,56 @@ subprojectRoutes.get('/', async (req, res) => { await subprojectController.getAl
  *         description: Error del servidor
  */
 subprojectRoutes.get('/:id', async (req, res) => { await subprojectController.getById(req, res); });
+
+/**
+ * @swagger
+ * /api/subprojects/{id}:
+ *   put:
+ *     summary: Actualizar un subproyecto
+ *     tags: [Subproyectos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del subproyecto
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               id_region:
+ *                 type: string
+ *               id_coordinator:
+ *                 type: string
+ *               socialFacilitatorIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *     responses:
+ *       200:
+ *         description: Subproyecto actualizado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Subproject'
+ *       404:
+ *         description: Subproyecto no encontrado
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+subprojectRoutes.put('/:id', authMiddleware, async (req, res) => { await subprojectController.update(req, res); });
 
 /**
  * @swagger

@@ -4,6 +4,7 @@ import { GetAllReportsUseCase } from '../../../application/use-cases/report/GetA
 import { GetReportByIdUseCase } from '../../../application/use-cases/report/GetReportByIdUseCase';
 import { GetReportsByCreatorIdUseCase } from '../../../application/use-cases/report/GetReportsByCreatorIdUseCase';
 import { GetReportsByTypeUseCase } from '../../../application/use-cases/report/GetReportsByTypeUseCase';
+import { UpdateReportUseCase } from '../../../application/use-cases/report/UpdateReportUseCase';
 import { ResourceNotFoundError } from '../../../shared/errors/CustomErrors';
 
 export class ReportController {
@@ -12,7 +13,8 @@ export class ReportController {
     private readonly getAllReportsUseCase: GetAllReportsUseCase,
     private readonly getReportByIdUseCase: GetReportByIdUseCase,
     private readonly getReportsByCreatorIdUseCase: GetReportsByCreatorIdUseCase,
-    private readonly getReportsByTypeUseCase: GetReportsByTypeUseCase
+    private readonly getReportsByTypeUseCase: GetReportsByTypeUseCase,
+    private readonly updateReportUseCase: UpdateReportUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<Response> {
@@ -124,6 +126,36 @@ export class ReportController {
       })));
     } catch (error) {
       console.error('Error getting reports by type:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async update(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      const { title, description, type, id_archive } = req.body;
+
+      const report = await this.updateReportUseCase.execute(id, {
+        title,
+        description,
+        type,
+        id_archive
+      });
+
+      return res.status(200).json({
+        id: report.id,
+        title: report.title,
+        description: report.description,
+        type: report.type,
+        id_archive: report.archiveId,
+        created_at: report.createdAt,
+        created_by: report.createdBy
+      });
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error('Error updating report:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   }

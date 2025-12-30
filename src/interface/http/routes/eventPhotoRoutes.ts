@@ -4,6 +4,7 @@ import { CreateEventPhotoUseCase } from '../../../application/use-cases/eventPho
 import { GetEventPhotosByEventIdUseCase } from '../../../application/use-cases/eventPhoto/GetEventPhotosByEventIdUseCase';
 import { GetEventPhotosByPhotoIdUseCase } from '../../../application/use-cases/eventPhoto/GetEventPhotosByPhotoIdUseCase';
 import { DeleteEventPhotoUseCase } from '../../../application/use-cases/eventPhoto/DeleteEventPhotoUseCase';
+import { UpdateEventPhotoUseCase } from '../../../application/use-cases/eventPhoto/UpdateEventPhotoUseCase';
 import { PrismaEventPhotoRepository } from '../../../infrastructure/repositories/PrismaEventPhotoRepository';
 import { PrismaEventRepository } from '../../../infrastructure/repositories/PrismaEventRepository';
 import { PrismaPhotoRepository } from '../../../infrastructure/repositories/PrismaPhotoRepository';
@@ -23,13 +24,15 @@ const createEventPhotoUseCase = new CreateEventPhotoUseCase(
 const getEventPhotosByEventIdUseCase = new GetEventPhotosByEventIdUseCase(eventPhotoRepository);
 const getEventPhotosByPhotoIdUseCase = new GetEventPhotosByPhotoIdUseCase(eventPhotoRepository);
 const deleteEventPhotoUseCase = new DeleteEventPhotoUseCase(eventPhotoRepository);
+const updateEventPhotoUseCase = new UpdateEventPhotoUseCase(eventPhotoRepository);
 
 // Controller
 const eventPhotoController = new EventPhotoController(
   createEventPhotoUseCase,
   getEventPhotosByEventIdUseCase,
   getEventPhotosByPhotoIdUseCase,
-  deleteEventPhotoUseCase
+  deleteEventPhotoUseCase,
+  updateEventPhotoUseCase
 );
 
 // Routes
@@ -158,5 +161,47 @@ eventPhotoRoutes.get('/photo/:photoId', authMiddleware, async (req, res) => { aw
  *         description: Error del servidor
  */
 eventPhotoRoutes.delete('/:id', authMiddleware, async (req, res) => { await eventPhotoController.delete(req, res); });
+
+/**
+ * @swagger
+ * /api/event-photos/{id}:
+ *   put:
+ *     summary: Actualizar una relación entre evento y foto
+ *     tags: [Fotos de Eventos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la relación evento-foto
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id_event:
+ *                 type: string
+ *               id_photo:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Relación actualizada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/EventPhoto'
+ *       404:
+ *         description: Relación no encontrada
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+eventPhotoRoutes.put('/:id', authMiddleware, async (req, res) => { await eventPhotoController.update(req, res); });
 
 export { eventPhotoRoutes };

@@ -3,6 +3,7 @@ import { CreateEventPhotoUseCase } from '../../../application/use-cases/eventPho
 import { GetEventPhotosByEventIdUseCase } from '../../../application/use-cases/eventPhoto/GetEventPhotosByEventIdUseCase';
 import { GetEventPhotosByPhotoIdUseCase } from '../../../application/use-cases/eventPhoto/GetEventPhotosByPhotoIdUseCase';
 import { DeleteEventPhotoUseCase } from '../../../application/use-cases/eventPhoto/DeleteEventPhotoUseCase';
+import { UpdateEventPhotoUseCase } from '../../../application/use-cases/eventPhoto/UpdateEventPhotoUseCase';
 import { ResourceNotFoundError } from '../../../shared/errors/CustomErrors';
 
 export class EventPhotoController {
@@ -10,7 +11,8 @@ export class EventPhotoController {
     private readonly createEventPhotoUseCase: CreateEventPhotoUseCase,
     private readonly getEventPhotosByEventIdUseCase: GetEventPhotosByEventIdUseCase,
     private readonly getEventPhotosByPhotoIdUseCase: GetEventPhotosByPhotoIdUseCase,
-    private readonly deleteEventPhotoUseCase: DeleteEventPhotoUseCase
+    private readonly deleteEventPhotoUseCase: DeleteEventPhotoUseCase,
+    private readonly updateEventPhotoUseCase: UpdateEventPhotoUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<Response> {
@@ -79,6 +81,30 @@ export class EventPhotoController {
         return res.status(404).json({ message: error.message });
       }
       console.error('Error deleting event photo:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async update(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      const { id_event, id_photo } = req.body;
+
+      const eventPhoto = await this.updateEventPhotoUseCase.execute(id, {
+        id_event,
+        id_photo
+      });
+
+      return res.status(200).json({
+        id: eventPhoto.id,
+        id_event: eventPhoto.eventId,
+        id_photo: eventPhoto.photoId
+      });
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error('Error updating event photo:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   }

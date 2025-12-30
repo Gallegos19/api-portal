@@ -4,6 +4,7 @@ import { CreatePhotoUseCase } from '../../../application/use-cases/photo/CreateP
 import { GetAllPhotosUseCase } from '../../../application/use-cases/photo/GetAllPhotosUseCase';
 import { GetPhotoByIdUseCase } from '../../../application/use-cases/photo/GetPhotoByIdUseCase';
 import { GetPhotosByCreatorIdUseCase } from '../../../application/use-cases/photo/GetPhotosByCreatorIdUseCase';
+import { UpdatePhotoUseCase } from '../../../application/use-cases/photo/UpdatePhotoUseCase';
 import { PrismaPhotoRepository } from '../../../infrastructure/repositories/PrismaPhotoRepository';
 import { PrismaUserRepository } from '../../../infrastructure/repositories/PrismaUserRepository';
 import { PrismaArchiveRepository } from '../../../infrastructure/repositories/PrismaArchiveRepository';
@@ -23,13 +24,15 @@ const createPhotoUseCase = new CreatePhotoUseCase(
 const getAllPhotosUseCase = new GetAllPhotosUseCase(photoRepository);
 const getPhotoByIdUseCase = new GetPhotoByIdUseCase(photoRepository);
 const getPhotosByCreatorIdUseCase = new GetPhotosByCreatorIdUseCase(photoRepository);
+const updatePhotoUseCase = new UpdatePhotoUseCase(photoRepository);
 
 // Controller
 const photoController = new PhotoController(
   createPhotoUseCase,
   getAllPhotosUseCase,
   getPhotoByIdUseCase,
-  getPhotosByCreatorIdUseCase
+  getPhotosByCreatorIdUseCase,
+  updatePhotoUseCase
 );
 
 // Routes
@@ -124,6 +127,50 @@ photoRoutes.get('/', authMiddleware, async (req, res) => { await photoController
  *         description: Error del servidor
  */
 photoRoutes.get('/:id', authMiddleware, async (req, res) => { await photoController.getById(req, res); });
+
+/**
+ * @swagger
+ * /api/photos/{id}:
+ *   put:
+ *     summary: Actualizar una foto
+ *     tags: [Fotos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la foto
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               id_archive:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Foto actualizada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Photo'
+ *       404:
+ *         description: Foto no encontrada
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+photoRoutes.put('/:id', authMiddleware, async (req, res) => { await photoController.update(req, res); });
 
 /**
  * @swagger

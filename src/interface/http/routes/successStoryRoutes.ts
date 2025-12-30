@@ -4,6 +4,7 @@ import { CreateSuccessStoryUseCase } from '../../../application/use-cases/succes
 import { GetAllSuccessStoriesUseCase } from '../../../application/use-cases/successStory/GetAllSuccessStoriesUseCase';
 import { GetSuccessStoryByIdUseCase } from '../../../application/use-cases/successStory/GetSuccessStoryByIdUseCase';
 import { GetSuccessStoriesByCreatorIdUseCase } from '../../../application/use-cases/successStory/GetSuccessStoriesByCreatorIdUseCase';
+import { UpdateSuccessStoryUseCase } from '../../../application/use-cases/successStory/UpdateSuccessStoryUseCase';
 import { PrismaSuccessStoryRepository } from '../../../infrastructure/repositories/PrismaSuccessStoryRepository';
 import { PrismaUserRepository } from '../../../infrastructure/repositories/PrismaUserRepository';
 import { PrismaPhotoRepository } from '../../../infrastructure/repositories/PrismaPhotoRepository';
@@ -23,13 +24,15 @@ const createSuccessStoryUseCase = new CreateSuccessStoryUseCase(
 const getAllSuccessStoriesUseCase = new GetAllSuccessStoriesUseCase(successStoryRepository);
 const getSuccessStoryByIdUseCase = new GetSuccessStoryByIdUseCase(successStoryRepository);
 const getSuccessStoriesByCreatorIdUseCase = new GetSuccessStoriesByCreatorIdUseCase(successStoryRepository);
+const updateSuccessStoryUseCase = new UpdateSuccessStoryUseCase(successStoryRepository);
 
 // Controller
 const successStoryController = new SuccessStoryController(
   createSuccessStoryUseCase,
   getAllSuccessStoriesUseCase,
   getSuccessStoryByIdUseCase,
-  getSuccessStoriesByCreatorIdUseCase
+  getSuccessStoriesByCreatorIdUseCase,
+  updateSuccessStoryUseCase
 );
 
 // Routes
@@ -124,6 +127,50 @@ successStoryRoutes.get('/', authMiddleware, async (req, res) => { await successS
  *         description: Error del servidor
  */
 successStoryRoutes.get('/:id', authMiddleware, async (req, res) => { await successStoryController.getById(req, res); });
+
+/**
+ * @swagger
+ * /api/success-stories/{id}:
+ *   put:
+ *     summary: Actualizar una historia de éxito
+ *     tags: [Historias de Éxito]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la historia de éxito
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               id_photo:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Historia de éxito actualizada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessStory'
+ *       404:
+ *         description: Historia de éxito no encontrada
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+successStoryRoutes.put('/:id', authMiddleware, async (req, res) => { await successStoryController.update(req, res); });
 
 /**
  * @swagger

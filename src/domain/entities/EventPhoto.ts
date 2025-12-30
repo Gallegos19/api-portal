@@ -23,6 +23,15 @@ export interface EventPhotoProps {
       return this.props.id_photo;
     }
   
+    // Methods to update properties
+    updateEventId(eventId: string): void {
+      this.props.id_event = eventId;
+    }
+  
+    updatePhotoId(photoId: string): void {
+      this.props.id_photo = photoId;
+    }
+  
     // Static factory method
     static create(props: Omit<EventPhotoProps, 'id'> & { id?: string }): EventPhoto {
       return new EventPhoto({

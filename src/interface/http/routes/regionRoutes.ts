@@ -3,6 +3,7 @@ import { RegionController } from '../controllers/RegionController';
 import { CreateRegionUseCase } from '../../../application/use-cases/region/CreateRegionUseCase';
 import { GetAllRegionsUseCase } from '../../../application/use-cases/region/GetAllRegionsUseCase';
 import { GetRegionByIdUseCase } from '../../../application/use-cases/region/GetRegionByIdUseCase';
+import { UpdateRegionUseCase } from '../../../application/use-cases/region/UpdateRegionUseCase';
 import { PrismaRegionRepository } from '../../../infrastructure/repositories/PrismaRegionRepository';
 import { authMiddleware } from '../middlewares/authMiddleware';
 
@@ -13,12 +14,14 @@ const regionRepository = new PrismaRegionRepository();
 const createRegionUseCase = new CreateRegionUseCase(regionRepository);
 const getAllRegionsUseCase = new GetAllRegionsUseCase(regionRepository);
 const getRegionByIdUseCase = new GetRegionByIdUseCase(regionRepository);
+const updateRegionUseCase = new UpdateRegionUseCase(regionRepository);
 
 // Controller
 const regionController = new RegionController(
   createRegionUseCase,
   getAllRegionsUseCase,
-  getRegionByIdUseCase
+  getRegionByIdUseCase,
+  updateRegionUseCase
 );
 
 // Routes
@@ -101,5 +104,41 @@ regionRoutes.get('/', async (req, res) => { await regionController.getAll(req, r
  *         description: Error del servidor
  */
 regionRoutes.get('/:id', async (req, res) => { await regionController.getById(req, res); });
+
+/**
+ * @swagger
+ * /api/regions/{id}:
+ *   put:
+ *     summary: Actualizar una región
+ *     tags: [Regiones]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la región
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name_region:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Región actualizada exitosamente
+ *       404:
+ *         description: Región no encontrada
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+regionRoutes.put('/:id', authMiddleware, async (req, res) => { await regionController.update(req, res); });
 
 export { regionRoutes };

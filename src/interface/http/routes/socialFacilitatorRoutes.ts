@@ -5,6 +5,7 @@ import { GetAllSocialFacilitatorsUseCase } from '../../../application/use-cases/
 import { GetSocialFacilitatorByIdUseCase } from '../../../application/use-cases/socialFacilitator/GetSocialFacilitatorByIdUseCase';
 import { GetSocialFacilitatorByUserIdUseCase } from '../../../application/use-cases/socialFacilitator/GetSocialFacilitatorByUserIdUseCase';
 import { GetSocialFacilitatorsBySubprojectIdUseCase } from '../../../application/use-cases/socialFacilitator/GetSocialFacilitatorsBySubprojectIdUseCase';
+import { UpdateSocialFacilitatorUseCase } from '../../../application/use-cases/socialFacilitator/UpdateSocialFacilitatorUseCase';
 import { PrismaSocialFacilitatorRepository } from '../../../infrastructure/repositories/PrismaSocialFacilitatorRepository';
 import { PrismaUserRepository } from '../../../infrastructure/repositories/PrismaUserRepository';
 import { PrismaSubprojectRepository } from '../../../infrastructure/repositories/PrismaSubprojectRepository';
@@ -27,6 +28,7 @@ const getAllSocialFacilitatorsUseCase = new GetAllSocialFacilitatorsUseCase(soci
 const getSocialFacilitatorByIdUseCase = new GetSocialFacilitatorByIdUseCase(socialFacilitatorRepository);
 const getSocialFacilitatorByUserIdUseCase = new GetSocialFacilitatorByUserIdUseCase(socialFacilitatorRepository);
 const getSocialFacilitatorsBySubprojectIdUseCase = new GetSocialFacilitatorsBySubprojectIdUseCase(socialFacilitatorRepository);
+const updateSocialFacilitatorUseCase = new UpdateSocialFacilitatorUseCase(socialFacilitatorRepository);
 
 // Controller
 const socialFacilitatorController = new SocialFacilitatorController(
@@ -34,7 +36,8 @@ const socialFacilitatorController = new SocialFacilitatorController(
   getAllSocialFacilitatorsUseCase,
   getSocialFacilitatorByIdUseCase,
   getSocialFacilitatorByUserIdUseCase,
-  getSocialFacilitatorsBySubprojectIdUseCase
+  getSocialFacilitatorsBySubprojectIdUseCase,
+  updateSocialFacilitatorUseCase
 );
 
 // Routes
@@ -124,6 +127,48 @@ socialFacilitatorRoutes.get('/', authMiddleware, async (req, res) => { await soc
  *         description: Error del servidor
  */
 socialFacilitatorRoutes.get('/:id', authMiddleware, async (req, res) => { await socialFacilitatorController.getById(req, res); });
+
+/**
+ * @swagger
+ * /api/social-facilitators/{id}:
+ *   put:
+ *     summary: Actualizar un facilitador social
+ *     tags: [Facilitadores Sociales]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del facilitador social
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id_user:
+ *                 type: string
+ *               id_region:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Facilitador social actualizado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SocialFacilitator'
+ *       404:
+ *         description: Facilitador social no encontrado
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+socialFacilitatorRoutes.put('/:id', authMiddleware, async (req, res) => { await socialFacilitatorController.update(req, res); });
 
 /**
  * @swagger

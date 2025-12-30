@@ -6,5 +6,6 @@ export interface EventPhotoRepository {
   findByPhotoId(photoId: string): Promise<EventPhoto[]>;
   findAll(): Promise<EventPhoto[]>;
   save(eventPhoto: EventPhoto): Promise<EventPhoto>;
+  update(eventPhoto: EventPhoto): Promise<EventPhoto>;
   delete(id: string): Promise<void>;
 }

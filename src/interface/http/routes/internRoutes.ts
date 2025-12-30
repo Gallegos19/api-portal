@@ -6,6 +6,7 @@ import { GetInternByIdUseCase } from '../../../application/use-cases/intern/GetI
 import { GetInternByUserIdUseCase } from '../../../application/use-cases/intern/GetInternByUserIdUseCase';
 import { GetInternsBySocialFacilitatorIdUseCase } from '../../../application/use-cases/intern/GetInternsBySocialFacilitatorIdUseCase';
 import { GetInternsBySubprojectIdUseCase } from '../../../application/use-cases/intern/GetInternsBySubprojectIdUseCase';
+import { UpdateInternUseCase } from '../../../application/use-cases/intern/UpdateInternUseCase';
 import { PrismaInternRepository } from '../../../infrastructure/repositories/PrismaInternRepository';
 import { PrismaUserRepository } from '../../../infrastructure/repositories/PrismaUserRepository';
 import { authMiddleware } from '../middlewares/authMiddleware';
@@ -21,6 +22,7 @@ const getInternByIdUseCase = new GetInternByIdUseCase(internRepository);
 const getInternByUserIdUseCase = new GetInternByUserIdUseCase(internRepository);
 const getInternsBySocialFacilitatorIdUseCase = new GetInternsBySocialFacilitatorIdUseCase(internRepository);
 const getInternsBySubprojectIdUseCase = new GetInternsBySubprojectIdUseCase(internRepository);
+const updateInternUseCase = new UpdateInternUseCase(internRepository);
 
 // Controller
 const internController = new InternController(
@@ -29,7 +31,8 @@ const internController = new InternController(
   getInternByIdUseCase,
   getInternByUserIdUseCase,
   getInternsBySocialFacilitatorIdUseCase,
-  getInternsBySubprojectIdUseCase
+  getInternsBySubprojectIdUseCase,
+  updateInternUseCase
 );
 
 // Routes
@@ -120,6 +123,64 @@ internRoutes.get('/', authMiddleware, async (req, res) => { await internControll
  *         description: Error del servidor
  */
 internRoutes.get('/:id', authMiddleware, async (req, res) => { await internController.getById(req, res); });
+
+/**
+ * @swagger
+ * /api/interns/{id}:
+ *   put:
+ *     summary: Actualizar un interno/pasante
+ *     tags: [Internos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del interno
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *               address:
+ *                 type: string
+ *               education_level:
+ *                 type: string
+ *               career_name:
+ *                 type: string
+ *               grade:
+ *                 type: string
+ *               name_tutor:
+ *                 type: string
+ *               service:
+ *                 type: string
+ *               documentation:
+ *                 type: string
+ *               id_subproject:
+ *                 type: string
+ *               id_social_facilitator:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Interno actualizado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Intern'
+ *       404:
+ *         description: Interno no encontrado
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+internRoutes.put('/:id', authMiddleware, async (req, res) => { await internController.update(req, res); });
 
 /**
  * @swagger

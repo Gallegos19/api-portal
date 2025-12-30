@@ -3,6 +3,7 @@ import { CreatePhotoUseCase } from '../../../application/use-cases/photo/CreateP
 import { GetAllPhotosUseCase } from '../../../application/use-cases/photo/GetAllPhotosUseCase';
 import { GetPhotoByIdUseCase } from '../../../application/use-cases/photo/GetPhotoByIdUseCase';
 import { GetPhotosByCreatorIdUseCase } from '../../../application/use-cases/photo/GetPhotosByCreatorIdUseCase';
+import { UpdatePhotoUseCase } from '../../../application/use-cases/photo/UpdatePhotoUseCase';
 import { ResourceNotFoundError } from '../../../shared/errors/CustomErrors';
 
 export class PhotoController {
@@ -10,7 +11,8 @@ export class PhotoController {
     private readonly createPhotoUseCase: CreatePhotoUseCase,
     private readonly getAllPhotosUseCase: GetAllPhotosUseCase,
     private readonly getPhotoByIdUseCase: GetPhotoByIdUseCase,
-    private readonly getPhotosByCreatorIdUseCase: GetPhotosByCreatorIdUseCase
+    private readonly getPhotosByCreatorIdUseCase: GetPhotosByCreatorIdUseCase,
+    private readonly updatePhotoUseCase: UpdatePhotoUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<Response> {
@@ -97,6 +99,34 @@ export class PhotoController {
       })));
     } catch (error) {
       console.error('Error getting photos by creator ID:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async update(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      const { title, description, id_archive } = req.body;
+
+      const photo = await this.updatePhotoUseCase.execute(id, {
+        title,
+        description,
+        id_archive
+      });
+
+      return res.status(200).json({
+        id: photo.id,
+        title: photo.title,
+        description: photo.description,
+        id_archive: photo.archiveId,
+        created_at: photo.createdAt,
+        created_by: photo.createdBy
+      });
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error('Error updating photo:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   }

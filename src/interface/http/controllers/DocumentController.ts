@@ -3,6 +3,7 @@ import { CreateDocumentUseCase } from '../../../application/use-cases/document/C
 import { GetAllDocumentsUseCase } from '../../../application/use-cases/document/GetAllDocumentsUseCase';
 import { GetDocumentByIdUseCase } from '../../../application/use-cases/document/GetDocumentByIdUseCase';
 import { GetDocumentsByInternIdUseCase } from '../../../application/use-cases/document/GetDocumentsByInternIdUseCase';
+import { UpdateDocumentUseCase } from '../../../application/use-cases/document/UpdateDocumentUseCase';
 import { ResourceNotFoundError } from '../../../shared/errors/CustomErrors';
 
 export class DocumentController {
@@ -10,7 +11,8 @@ export class DocumentController {
     private readonly createDocumentUseCase: CreateDocumentUseCase,
     private readonly getAllDocumentsUseCase: GetAllDocumentsUseCase,
     private readonly getDocumentByIdUseCase: GetDocumentByIdUseCase,
-    private readonly getDocumentsByInternIdUseCase: GetDocumentsByInternIdUseCase
+    private readonly getDocumentsByInternIdUseCase: GetDocumentsByInternIdUseCase,
+    private readonly updateDocumentUseCase: UpdateDocumentUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<Response> {
@@ -97,6 +99,33 @@ export class DocumentController {
       })));
     } catch (error) {
       console.error('Error getting documents by intern ID:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async update(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      const { title, description } = req.body;
+
+      const document = await this.updateDocumentUseCase.execute(id, {
+        title,
+        description
+      });
+
+      return res.status(200).json({
+        id: document.id,
+        title: document.title,
+        description: document.description,
+        id_intern: document.internId,
+        id_archive: document.archiveId,
+        created_at: document.createdAt
+      });
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error('Error updating document:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   }

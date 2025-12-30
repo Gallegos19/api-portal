@@ -4,6 +4,7 @@ import { GetAllArchivesUseCase } from '../../../application/use-cases/archive/Ge
 import { GetArchiveByIdUseCase } from '../../../application/use-cases/archive/GetArchiveByIdUseCase';
 import { GetArchivesByUploaderUserIdUseCase } from '../../../application/use-cases/archive/GetArchivesByUploaderUserIdUseCase';
 import { GetArchivesByFileTypeUseCase } from '../../../application/use-cases/archive/GetArchivesByFileTypeUseCase';
+import { UpdateArchiveUseCase } from '../../../application/use-cases/archive/UpdateArchiveUseCase';
 import { ResourceNotFoundError } from '../../../shared/errors/CustomErrors';
 
 export class ArchiveController {
@@ -12,7 +13,8 @@ export class ArchiveController {
     private readonly getAllArchivesUseCase: GetAllArchivesUseCase,
     private readonly getArchiveByIdUseCase: GetArchiveByIdUseCase,
     private readonly getArchivesByUploaderUserIdUseCase: GetArchivesByUploaderUserIdUseCase,
-    private readonly getArchivesByFileTypeUseCase: GetArchivesByFileTypeUseCase
+    private readonly getArchivesByFileTypeUseCase: GetArchivesByFileTypeUseCase,
+    private readonly updateArchiveUseCase: UpdateArchiveUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<Response> {
@@ -124,6 +126,36 @@ export class ArchiveController {
       })));
     } catch (error) {
       console.error('Error getting archives by file type:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async update(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      const { file_name, file_type, mime_type, storage_url } = req.body;
+
+      const archive = await this.updateArchiveUseCase.execute(id, {
+        file_name,
+        file_type,
+        mime_type,
+        storage_url
+      });
+
+      return res.status(200).json({
+        id: archive.id,
+        file_name: archive.fileName,
+        file_type: archive.fileType,
+        mime_type: archive.mimeType,
+        storage_url: archive.storageUrl,
+        uploaded_at: archive.uploadedAt,
+        uploaded_by: archive.uploadedBy
+      });
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error('Error updating archive:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   }

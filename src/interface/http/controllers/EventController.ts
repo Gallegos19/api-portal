@@ -3,6 +3,7 @@ import { CreateEventUseCase } from '../../../application/use-cases/event/CreateE
 import { GetAllEventsUseCase } from '../../../application/use-cases/event/GetAllEventsUseCase';
 import { GetEventByIdUseCase } from '../../../application/use-cases/event/GetEventByIdUseCase';
 import { GetEventsByCreatorIdUseCase } from '../../../application/use-cases/event/GetEventsByCreatorIdUseCase';
+import { UpdateEventUseCase } from '../../../application/use-cases/event/UpdateEventUseCase';
 import { ResourceNotFoundError } from '../../../shared/errors/CustomErrors';
 
 export class EventController {
@@ -10,7 +11,8 @@ export class EventController {
     private readonly createEventUseCase: CreateEventUseCase,
     private readonly getAllEventsUseCase: GetAllEventsUseCase,
     private readonly getEventByIdUseCase: GetEventByIdUseCase,
-    private readonly getEventsByCreatorIdUseCase: GetEventsByCreatorIdUseCase
+    private readonly getEventsByCreatorIdUseCase: GetEventsByCreatorIdUseCase,
+    private readonly updateEventUseCase: UpdateEventUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<Response> {
@@ -92,6 +94,32 @@ export class EventController {
       })));
     } catch (error) {
       console.error('Error getting events by creator ID:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async update(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      const { title, description } = req.body;
+
+      const event = await this.updateEventUseCase.execute(id, {
+        title,
+        description
+      });
+
+      return res.status(200).json({
+        id: event.id,
+        title: event.title,
+        description: event.description,
+        created_at: event.createdAt,
+        created_by: event.createdBy
+      });
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error('Error updating event:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   }

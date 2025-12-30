@@ -5,6 +5,7 @@ import { GetAllArchivesUseCase } from '../../../application/use-cases/archive/Ge
 import { GetArchiveByIdUseCase } from '../../../application/use-cases/archive/GetArchiveByIdUseCase';
 import { GetArchivesByUploaderUserIdUseCase } from '../../../application/use-cases/archive/GetArchivesByUploaderUserIdUseCase';
 import { GetArchivesByFileTypeUseCase } from '../../../application/use-cases/archive/GetArchivesByFileTypeUseCase';
+import { UpdateArchiveUseCase } from '../../../application/use-cases/archive/UpdateArchiveUseCase';
 import { PrismaArchiveRepository } from '../../../infrastructure/repositories/PrismaArchiveRepository';
 import { PrismaUserRepository } from '../../../infrastructure/repositories/PrismaUserRepository';
 import { authMiddleware } from '../middlewares/authMiddleware';
@@ -22,6 +23,7 @@ const getAllArchivesUseCase = new GetAllArchivesUseCase(archiveRepository);
 const getArchiveByIdUseCase = new GetArchiveByIdUseCase(archiveRepository);
 const getArchivesByUploaderUserIdUseCase = new GetArchivesByUploaderUserIdUseCase(archiveRepository);
 const getArchivesByFileTypeUseCase = new GetArchivesByFileTypeUseCase(archiveRepository);
+const updateArchiveUseCase = new UpdateArchiveUseCase(archiveRepository);
 
 // Controller
 const archiveController = new ArchiveController(
@@ -29,7 +31,8 @@ const archiveController = new ArchiveController(
   getAllArchivesUseCase,
   getArchiveByIdUseCase,
   getArchivesByUploaderUserIdUseCase,
-  getArchivesByFileTypeUseCase
+  getArchivesByFileTypeUseCase,
+  updateArchiveUseCase
 );
 
 // Routes
@@ -125,6 +128,52 @@ archiveRoutes.get('/', authMiddleware, async (req, res) => { await archiveContro
  *         description: Error del servidor
  */
 archiveRoutes.get('/:id', authMiddleware, async (req, res) => { await archiveController.getById(req, res); });
+
+/**
+ * @swagger
+ * /api/archives/{id}:
+ *   put:
+ *     summary: Actualizar un archivo
+ *     tags: [Archivos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del archivo
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file_name:
+ *                 type: string
+ *               file_type:
+ *                 type: string
+ *               mime_type:
+ *                 type: string
+ *               storage_url:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Archivo actualizado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Archive'
+ *       404:
+ *         description: Archivo no encontrado
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+archiveRoutes.put('/:id', authMiddleware, async (req, res) => { await archiveController.update(req, res); });
 
 /**
  * @swagger

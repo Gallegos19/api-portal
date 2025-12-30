@@ -23,6 +23,15 @@ export interface SocialFacilitatorProps {
     return this.props.id_region;
   }
   
+  // Methods to update properties
+  updateUserId(userId: string): void {
+    this.props.id_user = userId;
+  }
+
+  updateRegionId(regionId: string): void {
+    this.props.id_region = regionId;
+  }
+
   // Static factory method
   static create(props: Omit<SocialFacilitatorProps, 'id'> & { id?: string }): SocialFacilitator {
     return new SocialFacilitator({

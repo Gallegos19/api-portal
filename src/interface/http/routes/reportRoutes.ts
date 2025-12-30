@@ -5,6 +5,7 @@ import { GetAllReportsUseCase } from '../../../application/use-cases/report/GetA
 import { GetReportByIdUseCase } from '../../../application/use-cases/report/GetReportByIdUseCase';
 import { GetReportsByCreatorIdUseCase } from '../../../application/use-cases/report/GetReportsByCreatorIdUseCase';
 import { GetReportsByTypeUseCase } from '../../../application/use-cases/report/GetReportsByTypeUseCase';
+import { UpdateReportUseCase } from '../../../application/use-cases/report/UpdateReportUseCase';
 import { PrismaReportRepository } from '../../../infrastructure/repositories/PrismaReportRepository';
 import { PrismaUserRepository } from '../../../infrastructure/repositories/PrismaUserRepository';
 import { PrismaArchiveRepository } from '../../../infrastructure/repositories/PrismaArchiveRepository';
@@ -25,6 +26,7 @@ const getAllReportsUseCase = new GetAllReportsUseCase(reportRepository);
 const getReportByIdUseCase = new GetReportByIdUseCase(reportRepository);
 const getReportsByCreatorIdUseCase = new GetReportsByCreatorIdUseCase(reportRepository);
 const getReportsByTypeUseCase = new GetReportsByTypeUseCase(reportRepository);
+const updateReportUseCase = new UpdateReportUseCase(reportRepository);
 
 // Controller
 const reportController = new ReportController(
@@ -32,7 +34,8 @@ const reportController = new ReportController(
   getAllReportsUseCase,
   getReportByIdUseCase,
   getReportsByCreatorIdUseCase,
-  getReportsByTypeUseCase
+  getReportsByTypeUseCase,
+  updateReportUseCase
 );
 
 // Routes
@@ -128,6 +131,52 @@ reportRoutes.get('/', authMiddleware, async (req, res) => { await reportControll
  *         description: Error del servidor
  */
 reportRoutes.get('/:id', authMiddleware, async (req, res) => { await reportController.getById(req, res); });
+
+/**
+ * @swagger
+ * /api/reports/{id}:
+ *   put:
+ *     summary: Actualizar un reporte
+ *     tags: [Reportes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del reporte
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               type:
+ *                 type: string
+ *               id_archive:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Reporte actualizado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Report'
+ *       404:
+ *         description: Reporte no encontrado
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+reportRoutes.put('/:id', authMiddleware, async (req, res) => { await reportController.update(req, res); });
 
 /**
  * @swagger
