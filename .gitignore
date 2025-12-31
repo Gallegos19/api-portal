@@ -52,4 +52,5 @@ temp/
 tmp/
 
 # Generated files
-.prisma/
+prisma/
+
