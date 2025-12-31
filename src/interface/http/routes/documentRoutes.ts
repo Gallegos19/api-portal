@@ -5,6 +5,7 @@ import { GetAllDocumentsUseCase } from '../../../application/use-cases/document/
 import { GetDocumentByIdUseCase } from '../../../application/use-cases/document/GetDocumentByIdUseCase';
 import { GetDocumentsByInternIdUseCase } from '../../../application/use-cases/document/GetDocumentsByInternIdUseCase';
 import { UpdateDocumentUseCase } from '../../../application/use-cases/document/UpdateDocumentUseCase';
+import { DeleteDocumentUseCase } from '../../../application/use-cases/document/DeleteDocumentUseCase';
 import { PrismaDocumentRepository } from '../../../infrastructure/repositories/PrismaDocumentRepository';
 import { authMiddleware } from '../middlewares/authMiddleware';
 
@@ -17,6 +18,7 @@ const getAllDocumentsUseCase = new GetAllDocumentsUseCase(documentRepository);
 const getDocumentByIdUseCase = new GetDocumentByIdUseCase(documentRepository);
 const getDocumentsByInternIdUseCase = new GetDocumentsByInternIdUseCase(documentRepository);
 const updateDocumentUseCase = new UpdateDocumentUseCase(documentRepository);
+const deleteDocumentUseCase = new DeleteDocumentUseCase(documentRepository);
 
 // Controller
 const documentController = new DocumentController(
@@ -24,7 +26,8 @@ const documentController = new DocumentController(
   getAllDocumentsUseCase,
   getDocumentByIdUseCase,
   getDocumentsByInternIdUseCase,
-  updateDocumentUseCase
+  updateDocumentUseCase,
+  deleteDocumentUseCase
 );
 
 // Routes
@@ -189,5 +192,32 @@ documentRoutes.put('/:id', authMiddleware, async (req, res) => { await documentC
  *         description: Error del servidor
  */
 documentRoutes.get('/intern/:internId', authMiddleware, async (req, res) => { await documentController.getByInternId(req, res); });
+
+/**
+ * @swagger
+ * /api/documents/{id}:
+ *   delete:
+ *     summary: Eliminar documento (eliminado lógico)
+ *     tags: [Documentos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del documento
+ *     responses:
+ *       204:
+ *         description: Documento eliminado exitosamente
+ *       404:
+ *         description: Documento no encontrado
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+documentRoutes.delete('/:id', authMiddleware, async (req, res) => { await documentController.delete(req, res); });
 
 export { documentRoutes };

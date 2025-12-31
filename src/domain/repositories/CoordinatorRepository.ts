@@ -6,5 +6,6 @@ export interface CoordinatorRepository {
   findAll(): Promise<Coordinator[]>;
   save(coordinator: Coordinator): Promise<Coordinator>;
   update(coordinator: Coordinator): Promise<Coordinator>;
+  softDelete(id: string): Promise<void>;
   delete(id: string): Promise<void>;
 }

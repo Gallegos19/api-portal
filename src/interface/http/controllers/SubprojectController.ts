@@ -4,6 +4,7 @@ import { GetAllSubprojectsUseCase } from '../../../application/use-cases/subproj
 import { GetSubprojectByIdUseCase } from '../../../application/use-cases/subproject/GetSubprojectByIdUseCase';
 import { GetSubprojectsByRegionIdUseCase } from '../../../application/use-cases/subproject/GetSubprojectsByRegionIdUseCase';
 import { UpdateSubprojectUseCase } from '../../../application/use-cases/subproject/UpdateSubprojectUseCase';
+import { DeleteSubprojectUseCase } from '../../../application/use-cases/subproject/DeleteSubprojectUseCase';
 import { ResourceNotFoundError } from '../../../shared/errors/CustomErrors';
 
 export class SubprojectController {
@@ -12,7 +13,8 @@ export class SubprojectController {
     private readonly getAllSubprojectsUseCase: GetAllSubprojectsUseCase,
     private readonly getSubprojectByIdUseCase: GetSubprojectByIdUseCase,
     private readonly getSubprojectsByRegionIdUseCase: GetSubprojectsByRegionIdUseCase,
-    private readonly updateSubprojectUseCase: UpdateSubprojectUseCase
+    private readonly updateSubprojectUseCase: UpdateSubprojectUseCase,
+    private readonly deleteSubprojectUseCase: DeleteSubprojectUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<Response> {
@@ -129,6 +131,20 @@ export class SubprojectController {
         return res.status(404).json({ message: error.message });
       }
       console.error('Error updating subproject:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async delete(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      await this.deleteSubprojectUseCase.execute(id);
+      return res.status(204).send();
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error('Error deleting subproject:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   }

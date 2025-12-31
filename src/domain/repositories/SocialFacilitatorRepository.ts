@@ -8,5 +8,6 @@ export interface SocialFacilitatorRepository {
   findAll(): Promise<SocialFacilitator[]>;
   save(socialFacilitator: SocialFacilitator): Promise<SocialFacilitator>;
   update(socialFacilitator: SocialFacilitator): Promise<SocialFacilitator>;
+  softDelete(id: string): Promise<void>;
   delete(id: string): Promise<void>;
 }

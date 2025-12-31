@@ -6,5 +6,6 @@ export interface RegionRepository {
   findAll(): Promise<Region[]>;
   save(region: Region): Promise<Region>;
   update(region: Region): Promise<Region>;
+  softDelete(id: string): Promise<void>;
   delete(id: string): Promise<void>;
 }

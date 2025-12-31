@@ -4,4 +4,6 @@ export interface CreateArchiveDTO {
     mime_type?: string;
     storage_url: string;
     uploaded_by: string;
+    status_id?: string;
+    school_year_id?: string;
   }

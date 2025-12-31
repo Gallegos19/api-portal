@@ -6,6 +6,8 @@ export interface TrainingProps {
     target_audience?: string;
     created_at: Date;
     created_by: string;
+    status_id?: string;
+    school_year_id?: string;
   }
   
   export class Training {
@@ -43,34 +45,56 @@ export interface TrainingProps {
       return this.props.created_by;
     }
   
-    // Methods to update properties
-    updateTitle(title: string): void {
-      this.props.title = title;
-    }
-  
-    updateDescription(description?: string): void {
-      this.props.description = description;
-    }
-  
-    updateArchiveId(archiveId?: string): void {
-      this.props.id_archive = archiveId;
-    }
-  
-    updateTargetAudience(targetAudience?: string): void {
-      this.props.target_audience = targetAudience;
-    }
-  
-    // Static factory method
-    static create(props: Omit<TrainingProps, 'id' | 'created_at'> & { id?: string, created_at?: Date }): Training {
-      return new Training({
-        id: props.id || crypto.randomUUID(),
-        created_at: props.created_at || new Date(),
-        ...props
-      });
-    }
-  
-    // Method to convert entity to a plain object
-    toJSON(): TrainingProps {
-      return { ...this.props };
-    }
+  get statusId(): string | undefined {
+    return this.props.status_id;
   }
+
+  get schoolYearId(): string | undefined {
+    return this.props.school_year_id;
+  }
+
+  // Methods to update properties
+  updateTitle(title: string): void {
+    this.props.title = title;
+  }
+
+  updateDescription(description?: string): void {
+    this.props.description = description;
+  }
+
+  updateArchiveId(archiveId?: string): void {
+    this.props.id_archive = archiveId;
+  }
+
+  updateTargetAudience(targetAudience?: string): void {
+    this.props.target_audience = targetAudience;
+  }
+
+  updateStatusId(statusId: string): void {
+    this.props.status_id = statusId;
+  }
+
+  updateSchoolYearId(schoolYearId: string): void {
+    this.props.school_year_id = schoolYearId;
+  }
+
+  // Static factory method
+  static create(props: Omit<TrainingProps, 'id' | 'created_at'> & { id?: string; created_at?: Date }): Training {
+    return new Training({
+      id: props.id || crypto.randomUUID(),
+      created_at: props.created_at || new Date(),
+      title: props.title,
+      description: props.description,
+      id_archive: props.id_archive,
+      target_audience: props.target_audience,
+      created_by: props.created_by,
+      status_id: props.status_id,
+      school_year_id: props.school_year_id
+    });
+  }
+  
+  // Method to convert entity to a plain object
+  toJSON(): TrainingProps {
+    return { ...this.props };
+  }
+}

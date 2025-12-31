@@ -5,7 +5,10 @@ import prisma from "../database/prisma/client";
 export class PrismaUserRepository implements UserRepository {
   async findById(id: string): Promise<User | null> {
     try {
-      const userRecord = await prisma.user.findUnique({ where: { id } });
+      const userRecord = await prisma.user.findUnique({ 
+        where: { id },
+        include: { status: true }
+      });
       if (!userRecord) return null;
 
       return this.mapToDomain(userRecord);
@@ -17,7 +20,10 @@ export class PrismaUserRepository implements UserRepository {
 
   async findByEmail(email: string): Promise<User | null> {
     try {
-      const userRecord = await prisma.user.findUnique({ where: { email } });
+      const userRecord = await prisma.user.findUnique({ 
+        where: { email },
+        include: { status: true }
+      });
       if (!userRecord) return null;
 
       return this.mapToDomain(userRecord);
@@ -29,7 +35,14 @@ export class PrismaUserRepository implements UserRepository {
 
   async findAll(): Promise<User[]> {
     try {
-      const userRecords = await prisma.user.findMany();
+      const userRecords = await prisma.user.findMany({
+        where: {
+          status: {
+            name: { not: 'Eliminado' }
+          }
+        },
+        include: { status: true }
+      });
       return userRecords.map(this.mapToDomain);
     } catch (error) {
       console.error("Error in findAll:", error);
@@ -41,20 +54,29 @@ export class PrismaUserRepository implements UserRepository {
     try {
       const userData = user.toJSON();
 
+      // Obtener status_id o usar "Activo" por defecto
+      let statusId = userData.status_id;
+      if (!statusId) {
+        const activeStatus = await prisma.status.findUnique({ where: { name: 'Activo' } });
+        statusId = activeStatus?.id;
+      }
+
       const savedUser = await prisma.user.create({
         data: {
           id: userData.id,
           first_name: userData.first_name,
           last_name: userData.last_name,
           email: userData.email,
-          password: userData.password, // ← importante
+          password: userData.password,
           birth_date: userData.birth_date,
           sex: userData.sex,
           phone: userData.phone,
           role: userData.role,
           profile_photo_id: userData.profile_photo_id,
+          status_id: statusId,
           created_at: userData.created_at
-        }
+        },
+        include: { status: true }
       });
 
       return this.mapToDomain(savedUser);
@@ -74,18 +96,35 @@ export class PrismaUserRepository implements UserRepository {
           first_name: userData.first_name,
           last_name: userData.last_name,
           email: userData.email,
-          password: userData.password, // ← si se permite actualizar contraseña
+          password: userData.password,
           birth_date: userData.birth_date,
           sex: userData.sex,
           phone: userData.phone,
           role: userData.role,
-          profile_photo_id: userData.profile_photo_id
-        }
+          profile_photo_id: userData.profile_photo_id,
+          status_id: userData.status_id
+        },
+        include: { status: true }
       });
 
       return this.mapToDomain(updatedUser);
     } catch (error) {
       console.error("Error in update:", error);
+      throw error;
+    }
+  }
+
+  async softDelete(id: string): Promise<void> {
+    try {
+      const deletedStatus = await prisma.status.findUnique({ where: { name: 'Eliminado' } });
+      if (deletedStatus) {
+        await prisma.user.update({
+          where: { id },
+          data: { status_id: deletedStatus.id }
+        });
+      }
+    } catch (error) {
+      console.error("Error in softDelete:", error);
       throw error;
     }
   }
@@ -105,12 +144,13 @@ export class PrismaUserRepository implements UserRepository {
       first_name: record.first_name,
       last_name: record.last_name,
       email: record.email,
-      password: record.password, // ← necesario si User.create lo requiere
+      password: record.password,
       birth_date: record.birth_date ?? undefined,
       sex: record.sex ?? undefined,
       phone: record.phone ?? undefined,
       role: record.role ?? undefined,
       profile_photo_id: record.profile_photo_id ?? undefined,
+      status_id: record.status_id ?? undefined,
       created_at: record.created_at
     });
   };

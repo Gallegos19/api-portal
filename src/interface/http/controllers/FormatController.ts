@@ -4,6 +4,7 @@ import { GetAllFormatsUseCase } from '../../../application/use-cases/format/GetA
 import { GetFormatByIdUseCase } from '../../../application/use-cases/format/GetFormatByIdUseCase';
 import { GetFormatsByCreatorIdUseCase } from '../../../application/use-cases/format/GetFormatsByCreatorIdUseCase';
 import { UpdateFormatUseCase } from '../../../application/use-cases/format/UpdateFormatUseCase';
+import { DeleteFormatUseCase } from '../../../application/use-cases/format/DeleteFormatUseCase';
 import { ResourceNotFoundError } from '../../../shared/errors/CustomErrors';
 
 export class FormatController {
@@ -12,7 +13,8 @@ export class FormatController {
     private readonly getAllFormatsUseCase: GetAllFormatsUseCase,
     private readonly getFormatByIdUseCase: GetFormatByIdUseCase,
     private readonly getFormatsByCreatorIdUseCase: GetFormatsByCreatorIdUseCase,
-    private readonly updateFormatUseCase: UpdateFormatUseCase
+    private readonly updateFormatUseCase: UpdateFormatUseCase,
+    private readonly deleteFormatUseCase: DeleteFormatUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<Response> {
@@ -127,6 +129,20 @@ export class FormatController {
         return res.status(404).json({ message: error.message });
       }
       console.error('Error updating format:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async delete(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      await this.deleteFormatUseCase.execute(id);
+      return res.status(204).send();
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error('Error deleting format:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   }

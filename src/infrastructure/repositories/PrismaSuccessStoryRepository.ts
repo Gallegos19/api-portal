@@ -5,7 +5,13 @@ import prisma from "../database/prisma/client";
 export class PrismaSuccessStoryRepository implements SuccessStoryRepository {
   async findById(id: string): Promise<SuccessStory | null> {
     try {
-      const record = await prisma.successStory.findUnique({ where: { id } });
+      const record = await prisma.successStory.findUnique({ 
+        where: { id },
+        include: { 
+          status: true,
+          school_year: true
+        }
+      });
       return record ? this.mapToDomain(record) : null;
     } catch (error) {
       console.error("Error in findById:", error);
@@ -15,7 +21,16 @@ export class PrismaSuccessStoryRepository implements SuccessStoryRepository {
 
   async findByCreatorId(creatorId: string): Promise<SuccessStory[]> {
     try {
-      const records = await prisma.successStory.findMany({ where: { created_by: creatorId } });
+      const records = await prisma.successStory.findMany({ 
+        where: { 
+          created_by: creatorId,
+          status: { name: { not: 'Eliminado' } }
+        },
+        include: { 
+          status: true,
+          school_year: true
+        }
+      });
       return records.map(this.mapToDomain);
     } catch (error) {
       console.error("Error in findByCreatorId:", error);
@@ -25,7 +40,15 @@ export class PrismaSuccessStoryRepository implements SuccessStoryRepository {
 
   async findAll(): Promise<SuccessStory[]> {
     try {
-      const records = await prisma.successStory.findMany();
+      const records = await prisma.successStory.findMany({
+        where: {
+          status: { name: { not: 'Eliminado' } }
+        },
+        include: { 
+          status: true,
+          school_year: true
+        }
+      });
       return records.map(this.mapToDomain);
     } catch (error) {
       console.error("Error in findAll:", error);
@@ -37,9 +60,16 @@ export class PrismaSuccessStoryRepository implements SuccessStoryRepository {
     try {
       const skip = (page - 1) * limit;
       const records = await prisma.successStory.findMany({
+        where: {
+          status: { name: { not: 'Eliminado' } }
+        },
         skip,
         take: limit,
-        orderBy: { created_at: 'desc' }
+        orderBy: { created_at: 'desc' },
+        include: { 
+          status: true,
+          school_year: true
+        }
       });
       return records.map(this.mapToDomain);
     } catch (error) {
@@ -55,9 +85,14 @@ export class PrismaSuccessStoryRepository implements SuccessStoryRepository {
           title: {
             contains: query,
             mode: "insensitive" // para que no distinga mayúsculas/minúsculas
-          }
+          },
+          status: { name: { not: 'Eliminado' } }
         },
-        orderBy: { created_at: 'desc' }
+        orderBy: { created_at: 'desc' },
+        include: { 
+          status: true,
+          school_year: true
+        }
       });
       return records.map(this.mapToDomain);
     } catch (error) {
@@ -69,6 +104,13 @@ export class PrismaSuccessStoryRepository implements SuccessStoryRepository {
   async save(successStory: SuccessStory): Promise<SuccessStory> {
     try {
       const data = successStory.toJSON();
+
+      let statusId = data.status_id;
+      if (!statusId) {
+        const activeStatus = await prisma.status.findUnique({ where: { name: 'Activo' } });
+        statusId = activeStatus?.id;
+      }
+
       const saved = await prisma.successStory.create({
         data: {
           id: data.id,
@@ -76,7 +118,13 @@ export class PrismaSuccessStoryRepository implements SuccessStoryRepository {
           description: data.description,
           id_photo: data.id_photo,
           created_at: data.created_at,
-          created_by: data.created_by
+          created_by: data.created_by,
+          status_id: statusId,
+          school_year_id: data.school_year_id
+        },
+        include: { 
+          status: true,
+          school_year: true
         }
       });
       return this.mapToDomain(saved);
@@ -94,13 +142,29 @@ export class PrismaSuccessStoryRepository implements SuccessStoryRepository {
         data: {
           title: data.title,
           description: data.description,
-          id_photo: data.id_photo
+          id_photo: data.id_photo,
+          status_id: data.status_id,
+          school_year_id: data.school_year_id
+        },
+        include: { 
+          status: true,
+          school_year: true
         }
       });
       return this.mapToDomain(updated);
     } catch (error) {
       console.error("Error in update:", error);
       throw error;
+    }
+  }
+
+  async softDelete(id: string): Promise<void> {
+    const deletedStatus = await prisma.status.findUnique({ where: { name: 'Eliminado' } });
+    if (deletedStatus) {
+      await prisma.successStory.update({
+        where: { id },
+        data: { status_id: deletedStatus.id }
+      });
     }
   }
 
@@ -120,7 +184,9 @@ export class PrismaSuccessStoryRepository implements SuccessStoryRepository {
       description: record.description ?? undefined,
       id_photo: record.id_photo ?? undefined,
       created_at: record.created_at,
-      created_by: record.created_by
+      created_by: record.created_by,
+      status_id: record.status_id ?? undefined,
+      school_year_id: record.school_year_id ?? undefined
     });
   }
 }

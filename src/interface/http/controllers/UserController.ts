@@ -1,16 +1,18 @@
 import { Request, Response } from "express";
 import { CreateUserUseCase } from "../../../application/use-cases/user/CreateUserUseCase";
-import { UserAlreadyExistsError } from "../../../shared/errors/CustomErrors";
+import { UserAlreadyExistsError, ResourceNotFoundError } from "../../../shared/errors/CustomErrors";
 import { GetAllUsersUseCase } from "@application/use-cases/user/GetAllUsersUseCase";
 import { GetUserByIdUseCase } from "@application/use-cases/user/GetUserByIdUseCase";
 import { UpdateUserUseCase } from "@application/use-cases/user/UpdateUserUseCase";
+import { DeleteUserUseCase } from "@application/use-cases/user/DeleteUserUseCase";
 
 export class UserController {
   constructor(
     private readonly createUserUseCase: CreateUserUseCase,
     private readonly getAllUsersUseCase: GetAllUsersUseCase,
     private readonly getUserById: GetUserByIdUseCase,
-    private readonly updateUserUseCase: UpdateUserUseCase
+    private readonly updateUserUseCase: UpdateUserUseCase,
+    private readonly deleteUserUseCase: DeleteUserUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<Response> {
@@ -114,6 +116,20 @@ export class UserController {
       }
 
       console.error("Error updating user:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  async delete(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      await this.deleteUserUseCase.execute(id);
+      return res.status(204).send();
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error("Error deleting user:", error);
       return res.status(500).json({ message: "Internal server error" });
     }
   }

@@ -7,4 +7,5 @@ export interface CreateUserDTO {
     sex?: string;
     phone?: string;
     role?: string;
+    status_id?: string;
   }

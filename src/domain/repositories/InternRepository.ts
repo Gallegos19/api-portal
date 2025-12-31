@@ -8,5 +8,6 @@ export interface InternRepository {
   findAll(): Promise<Intern[]>;
   save(intern: Intern): Promise<Intern>;
   update(intern: Intern): Promise<Intern>;
+  softDelete(id: string): Promise<void>;
   delete(id: string): Promise<void>;
 }

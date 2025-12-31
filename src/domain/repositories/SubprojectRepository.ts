@@ -7,5 +7,6 @@ export interface SubprojectRepository {
   findAll(): Promise<Subproject[]>;
   save(subproject: Subproject): Promise<Subproject>;
   update(subproject: Subproject): Promise<Subproject>;
+  softDelete(id: string): Promise<void>;
   delete(id: string): Promise<void>;
 }

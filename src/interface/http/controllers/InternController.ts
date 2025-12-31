@@ -6,6 +6,7 @@ import { GetInternByUserIdUseCase } from '../../../application/use-cases/intern/
 import { GetInternsBySocialFacilitatorIdUseCase } from '../../../application/use-cases/intern/GetInternsBySocialFacilitatorIdUseCase';
 import { GetInternsBySubprojectIdUseCase } from '../../../application/use-cases/intern/GetInternsBySubprojectIdUseCase';
 import { UpdateInternUseCase } from '../../../application/use-cases/intern/UpdateInternUseCase';
+import { DeleteInternUseCase } from '../../../application/use-cases/intern/DeleteInternUseCase';
 import { ResourceNotFoundError } from '../../../shared/errors/CustomErrors';
 
 export class InternController {
@@ -16,7 +17,8 @@ export class InternController {
     private readonly getInternByUserIdUseCase: GetInternByUserIdUseCase,
     private readonly getInternsBySocialFacilitatorIdUseCase: GetInternsBySocialFacilitatorIdUseCase,
     private readonly getInternsBySubprojectIdUseCase: GetInternsBySubprojectIdUseCase,
-    private readonly updateInternUseCase: UpdateInternUseCase
+    private readonly updateInternUseCase: UpdateInternUseCase,
+    private readonly deleteInternUseCase: DeleteInternUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<Response> {
@@ -284,6 +286,20 @@ export class InternController {
         return res.status(404).json({ message: error.message });
       }
       console.error('Error updating intern:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async delete(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      await this.deleteInternUseCase.execute(id);
+      return res.status(204).send();
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error('Error deleting intern:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   }

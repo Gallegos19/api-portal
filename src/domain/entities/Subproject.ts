@@ -4,6 +4,7 @@ export interface SubprojectProps {
     id_region?: string;
     id_social_facilitator?: string;
     id_coordinator?: string;
+    status_id?: string;
   }
   
   export class Subproject {
@@ -31,7 +32,13 @@ export interface SubprojectProps {
 
   get coordinatorId(): string | undefined {
     return this.props.id_coordinator;
-  }    // Methods to update properties
+  }
+
+  get statusId(): string | undefined {
+    return this.props.status_id;
+  }
+
+  // Methods to update properties
     updateNameSubproject(nameSubproject: string): void {
       this.props.name_subproject = nameSubproject;
     }
@@ -46,7 +53,13 @@ export interface SubprojectProps {
 
   updateCoordinatorId(coordinatorId?: string): void {
     this.props.id_coordinator = coordinatorId;
-  }  // Static factory method
+  }
+
+  updateStatusId(statusId: string): void {
+    this.props.status_id = statusId;
+  }
+
+  // Static factory method
   static create(props: Omit<SubprojectProps, 'id'> & { id?: string }): Subproject {
     return new Subproject({
       id: props.id || crypto.randomUUID(),

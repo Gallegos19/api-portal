@@ -14,6 +14,8 @@ export interface InternProps {
     id_social_facilitator?: string;
     start_date?: Date;
     end_date?: Date;
+    status_id?: string;
+    school_year_id?: string;
   }
   
   export class Intern {
@@ -81,18 +83,34 @@ export interface InternProps {
       return this.props.end_date;
     }
   
-    // Methods to update properties
-    updateStatus(status: boolean): void {
-      this.props.status = status;
-    }
+  get statusId(): string | undefined {
+    return this.props.status_id;
+  }
+
+  get schoolYearId(): string | undefined {
+    return this.props.school_year_id;
+  }
+
+  // Methods to update properties
+  updateStatus(status: boolean): void {
+    this.props.status = status;
+  }
+
+  updateStatusId(statusId: string): void {
+    this.props.status_id = statusId;
+  }
+
+  updateSchoolYearId(schoolYearId: string): void {
+    this.props.school_year_id = schoolYearId;
+  }
+
+  updateAddress(address: string): void {
+    this.props.address = address;
+  }
   
-    updateAddress(address: string): void {
-      this.props.address = address;
-    }
-  
-    updateEducationLevel(educationLevel: string): void {
-      this.props.education_level = educationLevel;
-    }
+  updateEducationLevel(educationLevel: string): void {
+    this.props.education_level = educationLevel;
+  }
   
     updateCareerName(careerName: string): void {
       this.props.career_name = careerName;

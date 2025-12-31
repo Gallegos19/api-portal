@@ -5,6 +5,7 @@ import { GetAllPhotosUseCase } from '../../../application/use-cases/photo/GetAll
 import { GetPhotoByIdUseCase } from '../../../application/use-cases/photo/GetPhotoByIdUseCase';
 import { GetPhotosByCreatorIdUseCase } from '../../../application/use-cases/photo/GetPhotosByCreatorIdUseCase';
 import { UpdatePhotoUseCase } from '../../../application/use-cases/photo/UpdatePhotoUseCase';
+import { DeletePhotoUseCase } from '../../../application/use-cases/photo/DeletePhotoUseCase';
 import { PrismaPhotoRepository } from '../../../infrastructure/repositories/PrismaPhotoRepository';
 import { PrismaUserRepository } from '../../../infrastructure/repositories/PrismaUserRepository';
 import { PrismaArchiveRepository } from '../../../infrastructure/repositories/PrismaArchiveRepository';
@@ -25,6 +26,7 @@ const getAllPhotosUseCase = new GetAllPhotosUseCase(photoRepository);
 const getPhotoByIdUseCase = new GetPhotoByIdUseCase(photoRepository);
 const getPhotosByCreatorIdUseCase = new GetPhotosByCreatorIdUseCase(photoRepository);
 const updatePhotoUseCase = new UpdatePhotoUseCase(photoRepository);
+const deletePhotoUseCase = new DeletePhotoUseCase(photoRepository);
 
 // Controller
 const photoController = new PhotoController(
@@ -32,7 +34,8 @@ const photoController = new PhotoController(
   getAllPhotosUseCase,
   getPhotoByIdUseCase,
   getPhotosByCreatorIdUseCase,
-  updatePhotoUseCase
+  updatePhotoUseCase,
+  deletePhotoUseCase
 );
 
 // Routes
@@ -202,5 +205,32 @@ photoRoutes.put('/:id', authMiddleware, async (req, res) => { await photoControl
  *         description: Error del servidor
  */
 photoRoutes.get('/creator/:creatorId', authMiddleware, async (req, res) => { await photoController.getByCreatorId(req, res); });
+
+/**
+ * @swagger
+ * /api/photos/{id}:
+ *   delete:
+ *     summary: Eliminar foto (eliminado lógico)
+ *     tags: [Fotos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la foto
+ *     responses:
+ *       204:
+ *         description: Foto eliminada exitosamente
+ *       404:
+ *         description: Foto no encontrada
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+photoRoutes.delete('/:id', authMiddleware, async (req, res) => { await photoController.delete(req, res); });
 
 export { photoRoutes };

@@ -7,5 +7,6 @@ export interface ReportRepository {
   findAll(): Promise<Report[]>;
   save(report: Report): Promise<Report>;
   update(report: Report): Promise<Report>;
+  softDelete(id: string): Promise<void>;
   delete(id: string): Promise<void>;
 }

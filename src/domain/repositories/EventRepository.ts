@@ -6,5 +6,6 @@ export interface EventRepository {
   findAll(): Promise<Event[]>;
   save(event: Event): Promise<Event>;
   update(event: Event): Promise<Event>;
+  softDelete(id: string): Promise<void>;
   delete(id: string): Promise<void>;
 }

@@ -6,5 +6,6 @@ export interface DocumentRepository {
   findByInternId(internId: string): Promise<Document[]>;
   save(document: Document): Promise<Document>;
   update(document: Document): Promise<Document>;
+  softDelete(id: string): Promise<void>;
   delete(id: string): Promise<void>;
 }

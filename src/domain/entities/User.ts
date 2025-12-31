@@ -9,6 +9,7 @@ export interface UserProps {
     password: string; 
     role?: string;
     profile_photo_id?: string;
+    status_id?: string;
     created_at: Date;
   }
   
@@ -62,6 +63,10 @@ export interface UserProps {
     get profilePhotoId(): string | undefined {
       return this.props.profile_photo_id;
     }
+
+    get statusId(): string | undefined {
+      return this.props.status_id;
+    }
   
     get createdAt(): Date {
       return this.props.created_at;
@@ -86,6 +91,10 @@ export interface UserProps {
   
     updatePhone(phone: string): void {
       this.props.phone = phone;
+    }
+
+    updateStatusId(statusId: string): void {
+      this.props.status_id = statusId;
     }
   
     // Static factory method

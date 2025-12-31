@@ -7,5 +7,6 @@ export interface EventPhotoRepository {
   findAll(): Promise<EventPhoto[]>;
   save(eventPhoto: EventPhoto): Promise<EventPhoto>;
   update(eventPhoto: EventPhoto): Promise<EventPhoto>;
+  softDelete(id: string): Promise<void>;
   delete(id: string): Promise<void>;
 }

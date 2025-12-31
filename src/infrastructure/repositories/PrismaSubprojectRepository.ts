@@ -5,7 +5,10 @@ import prisma from "../database/prisma/client";
 export class PrismaSubprojectRepository implements SubprojectRepository {
   async findById(id: string): Promise<Subproject | null> {
     try {
-      const record = await prisma.subproject.findUnique({ where: { id } });
+      const record = await prisma.subproject.findUnique({ 
+        where: { id },
+        include: { status: true }
+      });
       return record ? this.mapToDomain(record) : null;
     } catch (error) {
       console.error("Error in findById:", error);
@@ -15,7 +18,13 @@ export class PrismaSubprojectRepository implements SubprojectRepository {
 
   async findByRegionId(regionId: string): Promise<Subproject[]> {
     try {
-      const records = await prisma.subproject.findMany({ where: { id_region: regionId } });
+      const records = await prisma.subproject.findMany({ 
+        where: { 
+          id_region: regionId,
+          status: { name: { not: 'Eliminado' } }
+        },
+        include: { status: true }
+      });
       return records.map(this.mapToDomain);
     } catch (error) {
       console.error("Error in findByRegionId:", error);
@@ -25,7 +34,10 @@ export class PrismaSubprojectRepository implements SubprojectRepository {
 
   async findByCoordinatorId(coordinatorId: string): Promise<Subproject | null> {
     try {
-      const record = await prisma.subproject.findFirst({ where: { id_coordinator: coordinatorId } });
+      const record = await prisma.subproject.findFirst({ 
+        where: { id_coordinator: coordinatorId },
+        include: { status: true }
+      });
       return record ? this.mapToDomain(record) : null;
     } catch (error) {
       console.error("Error in findByCoordinatorId:", error);
@@ -35,7 +47,12 @@ export class PrismaSubprojectRepository implements SubprojectRepository {
 
   async findAll(): Promise<Subproject[]> {
     try {
-      const records = await prisma.subproject.findMany();
+      const records = await prisma.subproject.findMany({
+        where: {
+          status: { name: { not: 'Eliminado' } }
+        },
+        include: { status: true }
+      });
       return records.map(this.mapToDomain);
     } catch (error) {
       console.error("Error in findAll:", error);
@@ -49,11 +66,19 @@ export class PrismaSubprojectRepository implements SubprojectRepository {
 
       const [records, total] = await Promise.all([
         prisma.subproject.findMany({
+          where: {
+            status: { name: { not: 'Eliminado' } }
+          },
           skip,
           take: limit,
-          orderBy: { name_subproject: "asc" }
+          orderBy: { name_subproject: "asc" },
+          include: { status: true }
         }),
-        prisma.subproject.count()
+        prisma.subproject.count({
+          where: {
+            status: { name: { not: 'Eliminado' } }
+          }
+        })
       ]);
 
       return {
@@ -73,9 +98,11 @@ export class PrismaSubprojectRepository implements SubprojectRepository {
           name_subproject: {
             contains: query,
             mode: "insensitive"
-          }
+          },
+          status: { name: { not: 'Eliminado' } }
         },
-        orderBy: { name_subproject: "asc" }
+        orderBy: { name_subproject: "asc" },
+        include: { status: true }
       });
       return records.map(this.mapToDomain);
     } catch (error) {
@@ -87,14 +114,23 @@ export class PrismaSubprojectRepository implements SubprojectRepository {
   async save(subproject: Subproject): Promise<Subproject> {
     try {
       const data = subproject.toJSON();
+
+      let statusId = data.status_id;
+      if (!statusId) {
+        const activeStatus = await prisma.status.findUnique({ where: { name: 'Activo' } });
+        statusId = activeStatus?.id;
+      }
+
       const saved = await prisma.subproject.create({
         data: {
           id: data.id,
           name_subproject: data.name_subproject,
           id_region: data.id_region,
           id_social_facilitator: data.id_social_facilitator,
-          id_coordinator: data.id_coordinator
-        }
+          id_coordinator: data.id_coordinator,
+          status_id: statusId
+        },
+        include: { status: true }
       });
       return this.mapToDomain(saved);
     } catch (error) {
@@ -112,13 +148,25 @@ export class PrismaSubprojectRepository implements SubprojectRepository {
           name_subproject: data.name_subproject,
           id_region: data.id_region,
           id_social_facilitator: data.id_social_facilitator,
-          id_coordinator: data.id_coordinator
-        }
+          id_coordinator: data.id_coordinator,
+          status_id: data.status_id
+        },
+        include: { status: true }
       });
       return this.mapToDomain(updated);
     } catch (error) {
       console.error("Error in update:", error);
       throw error;
+    }
+  }
+
+  async softDelete(id: string): Promise<void> {
+    const deletedStatus = await prisma.status.findUnique({ where: { name: 'Eliminado' } });
+    if (deletedStatus) {
+      await prisma.subproject.update({
+        where: { id },
+        data: { status_id: deletedStatus.id }
+      });
     }
   }
 
@@ -137,7 +185,8 @@ export class PrismaSubprojectRepository implements SubprojectRepository {
       name_subproject: record.name_subproject,
       id_region: record.id_region ?? undefined,
       id_social_facilitator: record.id_social_facilitator ?? undefined,
-      id_coordinator: record.id_coordinator ?? undefined
+      id_coordinator: record.id_coordinator ?? undefined,
+      status_id: record.status_id ?? undefined
     });
   }
 }

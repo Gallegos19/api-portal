@@ -4,6 +4,7 @@ import { GetAllSuccessStoriesUseCase } from '../../../application/use-cases/succ
 import { GetSuccessStoryByIdUseCase } from '../../../application/use-cases/successStory/GetSuccessStoryByIdUseCase';
 import { GetSuccessStoriesByCreatorIdUseCase } from '../../../application/use-cases/successStory/GetSuccessStoriesByCreatorIdUseCase';
 import { UpdateSuccessStoryUseCase } from '../../../application/use-cases/successStory/UpdateSuccessStoryUseCase';
+import { DeleteSuccessStoryUseCase } from '../../../application/use-cases/successStory/DeleteSuccessStoryUseCase';
 import { ResourceNotFoundError } from '../../../shared/errors/CustomErrors';
 
 export class SuccessStoryController {
@@ -12,7 +13,8 @@ export class SuccessStoryController {
     private readonly getAllSuccessStoriesUseCase: GetAllSuccessStoriesUseCase,
     private readonly getSuccessStoryByIdUseCase: GetSuccessStoryByIdUseCase,
     private readonly getSuccessStoriesByCreatorIdUseCase: GetSuccessStoriesByCreatorIdUseCase,
-    private readonly updateSuccessStoryUseCase: UpdateSuccessStoryUseCase
+    private readonly updateSuccessStoryUseCase: UpdateSuccessStoryUseCase,
+    private readonly deleteSuccessStoryUseCase: DeleteSuccessStoryUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<Response> {
@@ -127,6 +129,20 @@ export class SuccessStoryController {
         return res.status(404).json({ message: error.message });
       }
       console.error('Error updating success story:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async delete(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      await this.deleteSuccessStoryUseCase.execute(id);
+      return res.status(204).send();
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error('Error deleting success story:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   }

@@ -5,6 +5,7 @@ import { GetSocialFacilitatorByIdUseCase } from '../../../application/use-cases/
 import { GetSocialFacilitatorByUserIdUseCase } from '../../../application/use-cases/socialFacilitator/GetSocialFacilitatorByUserIdUseCase';
 import { GetSocialFacilitatorsBySubprojectIdUseCase } from '../../../application/use-cases/socialFacilitator/GetSocialFacilitatorsBySubprojectIdUseCase';
 import { UpdateSocialFacilitatorUseCase } from '../../../application/use-cases/socialFacilitator/UpdateSocialFacilitatorUseCase';
+import { DeleteSocialFacilitatorUseCase } from '../../../application/use-cases/socialFacilitator/DeleteSocialFacilitatorUseCase';
 import { ResourceNotFoundError } from '../../../shared/errors/CustomErrors';
 
 export class SocialFacilitatorController {
@@ -14,7 +15,8 @@ export class SocialFacilitatorController {
     private readonly getSocialFacilitatorByIdUseCase: GetSocialFacilitatorByIdUseCase,
     private readonly getSocialFacilitatorByUserIdUseCase: GetSocialFacilitatorByUserIdUseCase,
     private readonly getSocialFacilitatorsBySubprojectIdUseCase: GetSocialFacilitatorsBySubprojectIdUseCase,
-    private readonly updateSocialFacilitatorUseCase: UpdateSocialFacilitatorUseCase
+    private readonly updateSocialFacilitatorUseCase: UpdateSocialFacilitatorUseCase,
+    private readonly deleteSocialFacilitatorUseCase: DeleteSocialFacilitatorUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<Response> {
@@ -136,6 +138,20 @@ export class SocialFacilitatorController {
         return res.status(404).json({ message: error.message });
       }
       console.error('Error updating social facilitator:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async delete(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      await this.deleteSocialFacilitatorUseCase.execute(id);
+      return res.status(204).send();
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error('Error deleting social facilitator:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   }

@@ -4,6 +4,7 @@ import { CreateUserUseCase } from '../../../application/use-cases/user/CreateUse
 import { GetAllUsersUseCase } from '../../../application/use-cases/user/GetAllUsersUseCase';
 import { GetUserByIdUseCase } from '../../../application/use-cases/user/GetUserByIdUseCase';
 import { UpdateUserUseCase } from '../../../application/use-cases/user/UpdateUserUseCase';
+import { DeleteUserUseCase } from '../../../application/use-cases/user/DeleteUserUseCase';
 import { PrismaUserRepository } from '../../../infrastructure/repositories/PrismaUserRepository';
 import { BcryptPasswordService } from '../../../infrastructure/security/BcryptPasswordService';
 import { authMiddleware } from '../middlewares/authMiddleware';
@@ -17,10 +18,11 @@ const createUserUseCase = new CreateUserUseCase(userRepository, passwordService)
 const getAllUsersUseCase = new GetAllUsersUseCase(userRepository);
 const getUserById = new GetUserByIdUseCase(userRepository);
 const updateUserUseCase = new UpdateUserUseCase(userRepository, passwordService);
+const deleteUserUseCase = new DeleteUserUseCase(userRepository);
 
 
 // Controller
-const userController = new UserController(createUserUseCase, getAllUsersUseCase, getUserById, updateUserUseCase);
+const userController = new UserController(createUserUseCase, getAllUsersUseCase, getUserById, updateUserUseCase, deleteUserUseCase);
 
 // Routes
 
@@ -205,5 +207,32 @@ userRoutes.get('/:id', authMiddleware, async (req, res) => { await userControlle
  *         description: Error del servidor
  */
 userRoutes.put('/:id', authMiddleware, async (req, res) => { await userController.update(req, res); });
+
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   delete:
+ *     summary: Eliminar un usuario (eliminado lógico)
+ *     tags: [Usuarios]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del usuario
+ *     responses:
+ *       204:
+ *         description: Usuario eliminado exitosamente
+ *       404:
+ *         description: Usuario no encontrado
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+userRoutes.delete('/:id', authMiddleware, async (req, res) => { await userController.delete(req, res); });
 
 export { userRoutes };

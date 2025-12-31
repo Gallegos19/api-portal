@@ -5,6 +5,7 @@ import { GetAllSuccessStoriesUseCase } from '../../../application/use-cases/succ
 import { GetSuccessStoryByIdUseCase } from '../../../application/use-cases/successStory/GetSuccessStoryByIdUseCase';
 import { GetSuccessStoriesByCreatorIdUseCase } from '../../../application/use-cases/successStory/GetSuccessStoriesByCreatorIdUseCase';
 import { UpdateSuccessStoryUseCase } from '../../../application/use-cases/successStory/UpdateSuccessStoryUseCase';
+import { DeleteSuccessStoryUseCase } from '../../../application/use-cases/successStory/DeleteSuccessStoryUseCase';
 import { PrismaSuccessStoryRepository } from '../../../infrastructure/repositories/PrismaSuccessStoryRepository';
 import { PrismaUserRepository } from '../../../infrastructure/repositories/PrismaUserRepository';
 import { PrismaPhotoRepository } from '../../../infrastructure/repositories/PrismaPhotoRepository';
@@ -25,6 +26,7 @@ const getAllSuccessStoriesUseCase = new GetAllSuccessStoriesUseCase(successStory
 const getSuccessStoryByIdUseCase = new GetSuccessStoryByIdUseCase(successStoryRepository);
 const getSuccessStoriesByCreatorIdUseCase = new GetSuccessStoriesByCreatorIdUseCase(successStoryRepository);
 const updateSuccessStoryUseCase = new UpdateSuccessStoryUseCase(successStoryRepository);
+const deleteSuccessStoryUseCase = new DeleteSuccessStoryUseCase(successStoryRepository);
 
 // Controller
 const successStoryController = new SuccessStoryController(
@@ -32,7 +34,8 @@ const successStoryController = new SuccessStoryController(
   getAllSuccessStoriesUseCase,
   getSuccessStoryByIdUseCase,
   getSuccessStoriesByCreatorIdUseCase,
-  updateSuccessStoryUseCase
+  updateSuccessStoryUseCase,
+  deleteSuccessStoryUseCase
 );
 
 // Routes
@@ -202,5 +205,32 @@ successStoryRoutes.put('/:id', authMiddleware, async (req, res) => { await succe
  *         description: Error del servidor
  */
 successStoryRoutes.get('/creator/:creatorId', authMiddleware, async (req, res) => { await successStoryController.getByCreatorId(req, res); });
+
+/**
+ * @swagger
+ * /api/success-stories/{id}:
+ *   delete:
+ *     summary: Eliminar historia de éxito (eliminado lógico)
+ *     tags: [Historias de Éxito]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la historia de éxito
+ *     responses:
+ *       204:
+ *         description: Historia de éxito eliminada exitosamente
+ *       404:
+ *         description: Historia de éxito no encontrada
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+successStoryRoutes.delete('/:id', authMiddleware, async (req, res) => { await successStoryController.delete(req, res); });
 
 export { successStoryRoutes };

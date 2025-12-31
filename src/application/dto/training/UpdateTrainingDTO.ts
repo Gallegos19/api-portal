@@ -3,4 +3,6 @@ export interface UpdateTrainingDTO {
   description?: string;
   id_archive?: string;
   target_audience?: string;
+  status_id?: string;
+  school_year_id?: string;
 }

@@ -4,6 +4,7 @@ import { GetAllCoordinatorsUseCase } from '../../../application/use-cases/coordi
 import { GetCoordinatorByIdUseCase } from '../../../application/use-cases/coordinator/GetCoordinatorByIdUseCase';
 import { GetCoordinatorByUserIdUseCase } from '../../../application/use-cases/coordinator/GetCoordinatorByUserIdUseCase';
 import { UpdateCoordinatorUseCase } from '../../../application/use-cases/coordinator/UpdateCoordinatorUseCase';
+import { DeleteCoordinatorUseCase } from '../../../application/use-cases/coordinator/DeleteCoordinatorUseCase';
 import { ResourceNotFoundError } from '../../../shared/errors/CustomErrors';
 
 export class CoordinatorController {
@@ -12,7 +13,8 @@ export class CoordinatorController {
     private readonly getAllCoordinatorsUseCase: GetAllCoordinatorsUseCase,
     private readonly getCoordinatorByIdUseCase: GetCoordinatorByIdUseCase,
     private readonly getCoordinatorByUserIdUseCase: GetCoordinatorByUserIdUseCase,
-    private readonly updateCoordinatorUseCase: UpdateCoordinatorUseCase
+    private readonly updateCoordinatorUseCase: UpdateCoordinatorUseCase,
+    private readonly deleteCoordinatorUseCase: DeleteCoordinatorUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<Response> {
@@ -118,6 +120,20 @@ export class CoordinatorController {
         return res.status(404).json({ message: error.message });
       }
       console.error('Error updating coordinator:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async delete(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      await this.deleteCoordinatorUseCase.execute(id);
+      return res.status(204).send();
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error('Error deleting coordinator:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   }

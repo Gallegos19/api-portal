@@ -4,6 +4,7 @@ import { GetAllDocumentsUseCase } from '../../../application/use-cases/document/
 import { GetDocumentByIdUseCase } from '../../../application/use-cases/document/GetDocumentByIdUseCase';
 import { GetDocumentsByInternIdUseCase } from '../../../application/use-cases/document/GetDocumentsByInternIdUseCase';
 import { UpdateDocumentUseCase } from '../../../application/use-cases/document/UpdateDocumentUseCase';
+import { DeleteDocumentUseCase } from '../../../application/use-cases/document/DeleteDocumentUseCase';
 import { ResourceNotFoundError } from '../../../shared/errors/CustomErrors';
 
 export class DocumentController {
@@ -12,7 +13,8 @@ export class DocumentController {
     private readonly getAllDocumentsUseCase: GetAllDocumentsUseCase,
     private readonly getDocumentByIdUseCase: GetDocumentByIdUseCase,
     private readonly getDocumentsByInternIdUseCase: GetDocumentsByInternIdUseCase,
-    private readonly updateDocumentUseCase: UpdateDocumentUseCase
+    private readonly updateDocumentUseCase: UpdateDocumentUseCase,
+    private readonly deleteDocumentUseCase: DeleteDocumentUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<Response> {
@@ -126,6 +128,20 @@ export class DocumentController {
         return res.status(404).json({ message: error.message });
       }
       console.error('Error updating document:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async delete(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      await this.deleteDocumentUseCase.execute(id);
+      return res.status(204).send();
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error('Error deleting document:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   }

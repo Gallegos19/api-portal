@@ -4,6 +4,7 @@ import { GetAllEventsUseCase } from '../../../application/use-cases/event/GetAll
 import { GetEventByIdUseCase } from '../../../application/use-cases/event/GetEventByIdUseCase';
 import { GetEventsByCreatorIdUseCase } from '../../../application/use-cases/event/GetEventsByCreatorIdUseCase';
 import { UpdateEventUseCase } from '../../../application/use-cases/event/UpdateEventUseCase';
+import { DeleteEventUseCase } from '../../../application/use-cases/event/DeleteEventUseCase';
 import { ResourceNotFoundError } from '../../../shared/errors/CustomErrors';
 
 export class EventController {
@@ -12,7 +13,8 @@ export class EventController {
     private readonly getAllEventsUseCase: GetAllEventsUseCase,
     private readonly getEventByIdUseCase: GetEventByIdUseCase,
     private readonly getEventsByCreatorIdUseCase: GetEventsByCreatorIdUseCase,
-    private readonly updateEventUseCase: UpdateEventUseCase
+    private readonly updateEventUseCase: UpdateEventUseCase,
+    private readonly deleteEventUseCase: DeleteEventUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<Response> {
@@ -120,6 +122,20 @@ export class EventController {
         return res.status(404).json({ message: error.message });
       }
       console.error('Error updating event:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async delete(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      await this.deleteEventUseCase.execute(id);
+      return res.status(204).send();
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error('Error deleting event:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   }

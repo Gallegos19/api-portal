@@ -7,4 +7,5 @@ export interface UpdateUserDTO {
   sex?: string;
   phone?: string;
   role?: string;
+  status_id?: string;
 }

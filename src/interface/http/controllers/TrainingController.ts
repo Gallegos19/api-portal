@@ -4,6 +4,7 @@ import { GetAllTrainingsUseCase } from '../../../application/use-cases/training/
 import { GetTrainingByIdUseCase } from '../../../application/use-cases/training/GetTrainingByIdUseCase';
 import { GetTrainingsByCreatorIdUseCase } from '../../../application/use-cases/training/GetTrainingsByCreatorIdUseCase';
 import { UpdateTrainingUseCase } from '../../../application/use-cases/training/UpdateTrainingUseCase';
+import { DeleteTrainingUseCase } from '../../../application/use-cases/training/DeleteTrainingUseCase';
 import { ResourceNotFoundError } from '../../../shared/errors/CustomErrors';
 
 export class TrainingController {
@@ -12,7 +13,8 @@ export class TrainingController {
     private readonly getAllTrainingsUseCase: GetAllTrainingsUseCase,
     private readonly getTrainingByIdUseCase: GetTrainingByIdUseCase,
     private readonly getTrainingsByCreatorIdUseCase: GetTrainingsByCreatorIdUseCase,
-    private readonly updateTrainingUseCase: UpdateTrainingUseCase
+    private readonly updateTrainingUseCase: UpdateTrainingUseCase,
+    private readonly deleteTrainingUseCase: DeleteTrainingUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<Response> {
@@ -134,6 +136,20 @@ export class TrainingController {
         return res.status(404).json({ message: error.message });
       }
       console.error('Error updating training:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async delete(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      await this.deleteTrainingUseCase.execute(id);
+      return res.status(204).send();
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error('Error deleting training:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   }

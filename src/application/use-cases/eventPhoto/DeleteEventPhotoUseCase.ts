@@ -2,17 +2,15 @@ import { EventPhotoRepository } from "../../../domain/repositories/EventPhotoRep
 import { ResourceNotFoundError } from "../../../shared/errors/CustomErrors";
 
 export class DeleteEventPhotoUseCase {
-  constructor(
-    private eventPhotoRepository: EventPhotoRepository
-  ) {}
+  constructor(private eventPhotoRepository: EventPhotoRepository) {}
 
   async execute(id: string): Promise<void> {
     const eventPhoto = await this.eventPhotoRepository.findById(id);
     
     if (!eventPhoto) {
-      throw new ResourceNotFoundError('EventPhoto', id);
+      throw new ResourceNotFoundError("EventPhoto", id);
     }
-    
-    await this.eventPhotoRepository.delete(id);
+
+    await this.eventPhotoRepository.softDelete(id);
   }
 }

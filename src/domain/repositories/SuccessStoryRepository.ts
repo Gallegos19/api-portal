@@ -6,5 +6,6 @@ export interface SuccessStoryRepository {
   findAll(): Promise<SuccessStory[]>;
   save(successStory: SuccessStory): Promise<SuccessStory>;
   update(successStory: SuccessStory): Promise<SuccessStory>;
+  softDelete(id: string): Promise<void>;
   delete(id: string): Promise<void>;
 }

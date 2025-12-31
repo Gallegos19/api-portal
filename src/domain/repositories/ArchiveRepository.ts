@@ -7,5 +7,6 @@ export interface ArchiveRepository {
   findAll(): Promise<Archive[]>;
   save(archive: Archive): Promise<Archive>;
   update(archive: Archive): Promise<Archive>;
+  softDelete(id: string): Promise<void>;
   delete(id: string): Promise<void>;
 }

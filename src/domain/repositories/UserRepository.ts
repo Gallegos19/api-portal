@@ -6,5 +6,6 @@ export interface UserRepository {
   findAll(): Promise<User[]>;
   save(user: User): Promise<User>;
   update(user: User): Promise<User>;
+  softDelete(id: string): Promise<void>;
   delete(id: string): Promise<void>;
 }

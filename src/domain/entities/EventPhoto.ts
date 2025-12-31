@@ -22,27 +22,27 @@ export interface EventPhotoProps {
     get photoId(): string {
       return this.props.id_photo;
     }
-  
-    // Methods to update properties
-    updateEventId(eventId: string): void {
-      this.props.id_event = eventId;
-    }
-  
-    updatePhotoId(photoId: string): void {
-      this.props.id_photo = photoId;
-    }
-  
-    // Static factory method
-    static create(props: Omit<EventPhotoProps, 'id'> & { id?: string }): EventPhoto {
-      return new EventPhoto({
-        id: props.id || crypto.randomUUID(),
-        id_event: props.id_event,
-        id_photo: props.id_photo
-      });
-    }
-  
-    // Method to convert entity to a plain object
-    toJSON(): EventPhotoProps {
-      return { ...this.props };
-    }
+
+  // Methods to update properties
+  updateEventId(eventId: string): void {
+    this.props.id_event = eventId;
   }
+
+  updatePhotoId(photoId: string): void {
+    this.props.id_photo = photoId;
+  }
+
+  // Static factory method
+  static create(props: Omit<EventPhotoProps, 'id'> & { id?: string }): EventPhoto {
+    return new EventPhoto({
+      id: props.id || crypto.randomUUID(),
+      id_event: props.id_event,
+      id_photo: props.id_photo
+    });
+  }
+  
+  // Method to convert entity to a plain object
+  toJSON(): EventPhotoProps {
+    return { ...this.props };
+  }
+}

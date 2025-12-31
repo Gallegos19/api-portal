@@ -7,6 +7,7 @@ import { GetInternByUserIdUseCase } from '../../../application/use-cases/intern/
 import { GetInternsBySocialFacilitatorIdUseCase } from '../../../application/use-cases/intern/GetInternsBySocialFacilitatorIdUseCase';
 import { GetInternsBySubprojectIdUseCase } from '../../../application/use-cases/intern/GetInternsBySubprojectIdUseCase';
 import { UpdateInternUseCase } from '../../../application/use-cases/intern/UpdateInternUseCase';
+import { DeleteInternUseCase } from '../../../application/use-cases/intern/DeleteInternUseCase';
 import { PrismaInternRepository } from '../../../infrastructure/repositories/PrismaInternRepository';
 import { PrismaUserRepository } from '../../../infrastructure/repositories/PrismaUserRepository';
 import { authMiddleware } from '../middlewares/authMiddleware';
@@ -23,6 +24,7 @@ const getInternByUserIdUseCase = new GetInternByUserIdUseCase(internRepository);
 const getInternsBySocialFacilitatorIdUseCase = new GetInternsBySocialFacilitatorIdUseCase(internRepository);
 const getInternsBySubprojectIdUseCase = new GetInternsBySubprojectIdUseCase(internRepository);
 const updateInternUseCase = new UpdateInternUseCase(internRepository);
+const deleteInternUseCase = new DeleteInternUseCase(internRepository);
 
 // Controller
 const internController = new InternController(
@@ -32,7 +34,8 @@ const internController = new InternController(
   getInternByUserIdUseCase,
   getInternsBySocialFacilitatorIdUseCase,
   getInternsBySubprojectIdUseCase,
-  updateInternUseCase
+  updateInternUseCase,
+  deleteInternUseCase
 );
 
 // Routes
@@ -274,5 +277,32 @@ internRoutes.get('/facilitator/:facilitatorId', authMiddleware, async (req, res)
  *         description: Error del servidor
  */
 internRoutes.get('/subproject/:subprojectId', authMiddleware, async (req, res) => { await internController.getBySubprojectId(req, res); });
+
+/**
+ * @swagger
+ * /api/interns/{id}:
+ *   delete:
+ *     summary: Eliminar interno (eliminado lógico)
+ *     tags: [Internos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del interno
+ *     responses:
+ *       204:
+ *         description: Interno eliminado exitosamente
+ *       404:
+ *         description: Interno no encontrado
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+internRoutes.delete('/:id', authMiddleware, async (req, res) => { await internController.delete(req, res); });
 
 export { internRoutes };

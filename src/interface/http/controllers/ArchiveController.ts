@@ -5,6 +5,7 @@ import { GetArchiveByIdUseCase } from '../../../application/use-cases/archive/Ge
 import { GetArchivesByUploaderUserIdUseCase } from '../../../application/use-cases/archive/GetArchivesByUploaderUserIdUseCase';
 import { GetArchivesByFileTypeUseCase } from '../../../application/use-cases/archive/GetArchivesByFileTypeUseCase';
 import { UpdateArchiveUseCase } from '../../../application/use-cases/archive/UpdateArchiveUseCase';
+import { DeleteArchiveUseCase } from '../../../application/use-cases/archive/DeleteArchiveUseCase';
 import { ResourceNotFoundError } from '../../../shared/errors/CustomErrors';
 
 export class ArchiveController {
@@ -14,7 +15,8 @@ export class ArchiveController {
     private readonly getArchiveByIdUseCase: GetArchiveByIdUseCase,
     private readonly getArchivesByUploaderUserIdUseCase: GetArchivesByUploaderUserIdUseCase,
     private readonly getArchivesByFileTypeUseCase: GetArchivesByFileTypeUseCase,
-    private readonly updateArchiveUseCase: UpdateArchiveUseCase
+    private readonly updateArchiveUseCase: UpdateArchiveUseCase,
+    private readonly deleteArchiveUseCase: DeleteArchiveUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<Response> {
@@ -156,6 +158,20 @@ export class ArchiveController {
         return res.status(404).json({ message: error.message });
       }
       console.error('Error updating archive:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async delete(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      await this.deleteArchiveUseCase.execute(id);
+      return res.status(204).send();
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error('Error deleting archive:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   }

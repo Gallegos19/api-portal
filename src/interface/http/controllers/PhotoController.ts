@@ -4,6 +4,7 @@ import { GetAllPhotosUseCase } from '../../../application/use-cases/photo/GetAll
 import { GetPhotoByIdUseCase } from '../../../application/use-cases/photo/GetPhotoByIdUseCase';
 import { GetPhotosByCreatorIdUseCase } from '../../../application/use-cases/photo/GetPhotosByCreatorIdUseCase';
 import { UpdatePhotoUseCase } from '../../../application/use-cases/photo/UpdatePhotoUseCase';
+import { DeletePhotoUseCase } from '../../../application/use-cases/photo/DeletePhotoUseCase';
 import { ResourceNotFoundError } from '../../../shared/errors/CustomErrors';
 
 export class PhotoController {
@@ -12,7 +13,8 @@ export class PhotoController {
     private readonly getAllPhotosUseCase: GetAllPhotosUseCase,
     private readonly getPhotoByIdUseCase: GetPhotoByIdUseCase,
     private readonly getPhotosByCreatorIdUseCase: GetPhotosByCreatorIdUseCase,
-    private readonly updatePhotoUseCase: UpdatePhotoUseCase
+    private readonly updatePhotoUseCase: UpdatePhotoUseCase,
+    private readonly deletePhotoUseCase: DeletePhotoUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<Response> {
@@ -127,6 +129,20 @@ export class PhotoController {
         return res.status(404).json({ message: error.message });
       }
       console.error('Error updating photo:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async delete(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      await this.deletePhotoUseCase.execute(id);
+      return res.status(204).send();
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error('Error deleting photo:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   }

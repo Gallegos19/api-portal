@@ -5,6 +5,7 @@ import { GetAllTrainingsUseCase } from '../../../application/use-cases/training/
 import { GetTrainingByIdUseCase } from '../../../application/use-cases/training/GetTrainingByIdUseCase';
 import { GetTrainingsByCreatorIdUseCase } from '../../../application/use-cases/training/GetTrainingsByCreatorIdUseCase';
 import { UpdateTrainingUseCase } from '../../../application/use-cases/training/UpdateTrainingUseCase';
+import { DeleteTrainingUseCase } from '../../../application/use-cases/training/DeleteTrainingUseCase';
 import { PrismaTrainingRepository } from '../../../infrastructure/repositories/PrismaTrainingRepository';
 import { PrismaUserRepository } from '../../../infrastructure/repositories/PrismaUserRepository';
 import { PrismaArchiveRepository } from '../../../infrastructure/repositories/PrismaArchiveRepository';
@@ -25,6 +26,7 @@ const getAllTrainingsUseCase = new GetAllTrainingsUseCase(trainingRepository);
 const getTrainingByIdUseCase = new GetTrainingByIdUseCase(trainingRepository);
 const getTrainingsByCreatorIdUseCase = new GetTrainingsByCreatorIdUseCase(trainingRepository);
 const updateTrainingUseCase = new UpdateTrainingUseCase(trainingRepository);
+const deleteTrainingUseCase = new DeleteTrainingUseCase(trainingRepository);
 
 // Controller
 const trainingController = new TrainingController(
@@ -32,7 +34,8 @@ const trainingController = new TrainingController(
   getAllTrainingsUseCase,
   getTrainingByIdUseCase,
   getTrainingsByCreatorIdUseCase,
-  updateTrainingUseCase
+  updateTrainingUseCase,
+  deleteTrainingUseCase
 );
 
 // Routes
@@ -202,5 +205,32 @@ trainingRoutes.put('/:id', authMiddleware, async (req, res) => { await trainingC
  *         description: Error del servidor
  */
 trainingRoutes.get('/creator/:creatorId', authMiddleware, async (req, res) => { await trainingController.getByCreatorId(req, res); });
+
+/**
+ * @swagger
+ * /api/trainings/{id}:
+ *   delete:
+ *     summary: Eliminar capacitación (eliminado lógico)
+ *     tags: [Capacitaciones]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la capacitación
+ *     responses:
+ *       204:
+ *         description: Capacitación eliminada exitosamente
+ *       404:
+ *         description: Capacitación no encontrada
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+trainingRoutes.delete('/:id', authMiddleware, async (req, res) => { await trainingController.delete(req, res); });
 
 export { trainingRoutes };

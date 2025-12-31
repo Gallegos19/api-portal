@@ -6,6 +6,7 @@ import { GetArchiveByIdUseCase } from '../../../application/use-cases/archive/Ge
 import { GetArchivesByUploaderUserIdUseCase } from '../../../application/use-cases/archive/GetArchivesByUploaderUserIdUseCase';
 import { GetArchivesByFileTypeUseCase } from '../../../application/use-cases/archive/GetArchivesByFileTypeUseCase';
 import { UpdateArchiveUseCase } from '../../../application/use-cases/archive/UpdateArchiveUseCase';
+import { DeleteArchiveUseCase } from '../../../application/use-cases/archive/DeleteArchiveUseCase';
 import { PrismaArchiveRepository } from '../../../infrastructure/repositories/PrismaArchiveRepository';
 import { PrismaUserRepository } from '../../../infrastructure/repositories/PrismaUserRepository';
 import { authMiddleware } from '../middlewares/authMiddleware';
@@ -24,6 +25,7 @@ const getArchiveByIdUseCase = new GetArchiveByIdUseCase(archiveRepository);
 const getArchivesByUploaderUserIdUseCase = new GetArchivesByUploaderUserIdUseCase(archiveRepository);
 const getArchivesByFileTypeUseCase = new GetArchivesByFileTypeUseCase(archiveRepository);
 const updateArchiveUseCase = new UpdateArchiveUseCase(archiveRepository);
+const deleteArchiveUseCase = new DeleteArchiveUseCase(archiveRepository);
 
 // Controller
 const archiveController = new ArchiveController(
@@ -32,7 +34,8 @@ const archiveController = new ArchiveController(
   getArchiveByIdUseCase,
   getArchivesByUploaderUserIdUseCase,
   getArchivesByFileTypeUseCase,
-  updateArchiveUseCase
+  updateArchiveUseCase,
+  deleteArchiveUseCase
 );
 
 // Routes
@@ -236,5 +239,32 @@ archiveRoutes.get('/uploader/:userId', authMiddleware, async (req, res) => { awa
  *         description: Error del servidor
  */
 archiveRoutes.get('/type/:fileType', authMiddleware, async (req, res) => { await archiveController.getByFileType(req, res); });
+
+/**
+ * @swagger
+ * /api/archives/{id}:
+ *   delete:
+ *     summary: Eliminar archivo (eliminado lógico)
+ *     tags: [Archivos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del archivo
+ *     responses:
+ *       204:
+ *         description: Archivo eliminado exitosamente
+ *       404:
+ *         description: Archivo no encontrado
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+archiveRoutes.delete('/:id', authMiddleware, async (req, res) => { await archiveController.delete(req, res); });
 
 export { archiveRoutes };

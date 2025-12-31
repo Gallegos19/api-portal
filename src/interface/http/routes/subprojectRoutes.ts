@@ -5,6 +5,7 @@ import { GetAllSubprojectsUseCase } from '../../../application/use-cases/subproj
 import { GetSubprojectByIdUseCase } from '../../../application/use-cases/subproject/GetSubprojectByIdUseCase';
 import { GetSubprojectsByRegionIdUseCase } from '../../../application/use-cases/subproject/GetSubprojectsByRegionIdUseCase';
 import { UpdateSubprojectUseCase } from '../../../application/use-cases/subproject/UpdateSubprojectUseCase';
+import { DeleteSubprojectUseCase } from '../../../application/use-cases/subproject/DeleteSubprojectUseCase';
 import { PrismaSubprojectRepository } from '../../../infrastructure/repositories/PrismaSubprojectRepository';
 import { PrismaRegionRepository } from '../../../infrastructure/repositories/PrismaRegionRepository';
 import { PrismaCoordinatorRepository } from '../../../infrastructure/repositories/PrismaCoordinatorRepository';
@@ -28,6 +29,7 @@ const getAllSubprojectsUseCase = new GetAllSubprojectsUseCase(subprojectReposito
 const getSubprojectByIdUseCase = new GetSubprojectByIdUseCase(subprojectRepository);
 const getSubprojectsByRegionIdUseCase = new GetSubprojectsByRegionIdUseCase(subprojectRepository);
 const updateSubprojectUseCase = new UpdateSubprojectUseCase(subprojectRepository);
+const deleteSubprojectUseCase = new DeleteSubprojectUseCase(subprojectRepository);
 
 // Controller
 const subprojectController = new SubprojectController(
@@ -35,7 +37,8 @@ const subprojectController = new SubprojectController(
   getAllSubprojectsUseCase,
   getSubprojectByIdUseCase,
   getSubprojectsByRegionIdUseCase,
-  updateSubprojectUseCase
+  updateSubprojectUseCase,
+  deleteSubprojectUseCase
 );
 
 // Routes
@@ -202,5 +205,32 @@ subprojectRoutes.put('/:id', authMiddleware, async (req, res) => { await subproj
  *         description: Error del servidor
  */
 subprojectRoutes.get('/region/:regionId', async (req, res) => { await subprojectController.getByRegionId(req, res); });
+
+/**
+ * @swagger
+ * /api/subprojects/{id}:
+ *   delete:
+ *     summary: Eliminar subproyecto (eliminado lógico)
+ *     tags: [Subproyectos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del subproyecto
+ *     responses:
+ *       204:
+ *         description: Subproyecto eliminado exitosamente
+ *       404:
+ *         description: Subproyecto no encontrado
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+subprojectRoutes.delete('/:id', authMiddleware, async (req, res) => { await subprojectController.delete(req, res); });
 
 export { subprojectRoutes };

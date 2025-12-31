@@ -13,4 +13,6 @@ export interface CreateInternDTO {
     id_social_facilitator?: string;
     start_date?: Date;
     end_date?: Date;
+    status_id?: string;
+    school_year_id?: string;
   }

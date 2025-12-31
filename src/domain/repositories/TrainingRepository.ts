@@ -6,5 +6,6 @@ export interface TrainingRepository {
   findAll(): Promise<Training[]>;
   save(training: Training): Promise<Training>;
   update(training: Training): Promise<Training>;
+  softDelete(id: string): Promise<void>;
   delete(id: string): Promise<void>;
 }

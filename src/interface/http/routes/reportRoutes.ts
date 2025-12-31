@@ -6,6 +6,7 @@ import { GetReportByIdUseCase } from '../../../application/use-cases/report/GetR
 import { GetReportsByCreatorIdUseCase } from '../../../application/use-cases/report/GetReportsByCreatorIdUseCase';
 import { GetReportsByTypeUseCase } from '../../../application/use-cases/report/GetReportsByTypeUseCase';
 import { UpdateReportUseCase } from '../../../application/use-cases/report/UpdateReportUseCase';
+import { DeleteReportUseCase } from '../../../application/use-cases/report/DeleteReportUseCase';
 import { PrismaReportRepository } from '../../../infrastructure/repositories/PrismaReportRepository';
 import { PrismaUserRepository } from '../../../infrastructure/repositories/PrismaUserRepository';
 import { PrismaArchiveRepository } from '../../../infrastructure/repositories/PrismaArchiveRepository';
@@ -27,6 +28,7 @@ const getReportByIdUseCase = new GetReportByIdUseCase(reportRepository);
 const getReportsByCreatorIdUseCase = new GetReportsByCreatorIdUseCase(reportRepository);
 const getReportsByTypeUseCase = new GetReportsByTypeUseCase(reportRepository);
 const updateReportUseCase = new UpdateReportUseCase(reportRepository);
+const deleteReportUseCase = new DeleteReportUseCase(reportRepository);
 
 // Controller
 const reportController = new ReportController(
@@ -35,7 +37,8 @@ const reportController = new ReportController(
   getReportByIdUseCase,
   getReportsByCreatorIdUseCase,
   getReportsByTypeUseCase,
-  updateReportUseCase
+  updateReportUseCase,
+  deleteReportUseCase
 );
 
 // Routes
@@ -239,5 +242,32 @@ reportRoutes.get('/creator/:creatorId', authMiddleware, async (req, res) => { aw
  *         description: Error del servidor
  */
 reportRoutes.get('/type/:type', authMiddleware, async (req, res) => { await reportController.getByType(req, res); });
+
+/**
+ * @swagger
+ * /api/reports/{id}:
+ *   delete:
+ *     summary: Eliminar reporte (eliminado lógico)
+ *     tags: [Reportes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del reporte
+ *     responses:
+ *       204:
+ *         description: Reporte eliminado exitosamente
+ *       404:
+ *         description: Reporte no encontrado
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+reportRoutes.delete('/:id', authMiddleware, async (req, res) => { await reportController.delete(req, res); });
 
 export { reportRoutes };

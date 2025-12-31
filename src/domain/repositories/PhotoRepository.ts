@@ -6,5 +6,6 @@ export interface PhotoRepository {
   findAll(): Promise<Photo[]>;
   save(photo: Photo): Promise<Photo>;
   update(photo: Photo): Promise<Photo>;
+  softDelete(id: string): Promise<void>;
   delete(id: string): Promise<void>;
 }

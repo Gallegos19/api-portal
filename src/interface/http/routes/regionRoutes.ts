@@ -4,6 +4,7 @@ import { CreateRegionUseCase } from '../../../application/use-cases/region/Creat
 import { GetAllRegionsUseCase } from '../../../application/use-cases/region/GetAllRegionsUseCase';
 import { GetRegionByIdUseCase } from '../../../application/use-cases/region/GetRegionByIdUseCase';
 import { UpdateRegionUseCase } from '../../../application/use-cases/region/UpdateRegionUseCase';
+import { DeleteRegionUseCase } from '../../../application/use-cases/region/DeleteRegionUseCase';
 import { PrismaRegionRepository } from '../../../infrastructure/repositories/PrismaRegionRepository';
 import { authMiddleware } from '../middlewares/authMiddleware';
 
@@ -15,13 +16,15 @@ const createRegionUseCase = new CreateRegionUseCase(regionRepository);
 const getAllRegionsUseCase = new GetAllRegionsUseCase(regionRepository);
 const getRegionByIdUseCase = new GetRegionByIdUseCase(regionRepository);
 const updateRegionUseCase = new UpdateRegionUseCase(regionRepository);
+const deleteRegionUseCase = new DeleteRegionUseCase(regionRepository);
 
 // Controller
 const regionController = new RegionController(
   createRegionUseCase,
   getAllRegionsUseCase,
   getRegionByIdUseCase,
-  updateRegionUseCase
+  updateRegionUseCase,
+  deleteRegionUseCase
 );
 
 // Routes
@@ -140,5 +143,32 @@ regionRoutes.get('/:id', async (req, res) => { await regionController.getById(re
  *         description: Error del servidor
  */
 regionRoutes.put('/:id', authMiddleware, async (req, res) => { await regionController.update(req, res); });
+
+/**
+ * @swagger
+ * /api/regions/{id}:
+ *   delete:
+ *     summary: Eliminar región (eliminado lógico)
+ *     tags: [Regiones]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la región
+ *     responses:
+ *       204:
+ *         description: Región eliminada exitosamente
+ *       404:
+ *         description: Región no encontrada
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+regionRoutes.delete('/:id', authMiddleware, async (req, res) => { await regionController.delete(req, res); });
 
 export { regionRoutes };

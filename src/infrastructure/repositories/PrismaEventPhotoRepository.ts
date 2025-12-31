@@ -93,6 +93,11 @@ export class PrismaEventPhotoRepository implements EventPhotoRepository {
     });
   }
 
+  async softDelete(id: string): Promise<void> {
+    // EventPhoto es una tabla de relación, usar delete directamente
+    await this.delete(id);
+  }
+
   async delete(id: string): Promise<void> {
     await prisma.eventPhoto.delete({
       where: { id }

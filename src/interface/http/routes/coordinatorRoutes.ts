@@ -5,6 +5,7 @@ import { GetAllCoordinatorsUseCase } from '../../../application/use-cases/coordi
 import { GetCoordinatorByIdUseCase } from '../../../application/use-cases/coordinator/GetCoordinatorByIdUseCase';
 import { GetCoordinatorByUserIdUseCase } from '../../../application/use-cases/coordinator/GetCoordinatorByUserIdUseCase';
 import { UpdateCoordinatorUseCase } from '../../../application/use-cases/coordinator/UpdateCoordinatorUseCase';
+import { DeleteCoordinatorUseCase } from '../../../application/use-cases/coordinator/DeleteCoordinatorUseCase';
 import { PrismaCoordinatorRepository } from '../../../infrastructure/repositories/PrismaCoordinatorRepository';
 import { PrismaUserRepository } from '../../../infrastructure/repositories/PrismaUserRepository';
 import { PrismaRegionRepository } from '../../../infrastructure/repositories/PrismaRegionRepository';
@@ -25,6 +26,7 @@ const getAllCoordinatorsUseCase = new GetAllCoordinatorsUseCase(coordinatorRepos
 const getCoordinatorByIdUseCase = new GetCoordinatorByIdUseCase(coordinatorRepository);
 const getCoordinatorByUserIdUseCase = new GetCoordinatorByUserIdUseCase(coordinatorRepository);
 const updateCoordinatorUseCase = new UpdateCoordinatorUseCase(coordinatorRepository);
+const deleteCoordinatorUseCase = new DeleteCoordinatorUseCase(coordinatorRepository);
 
 // Controller
 const coordinatorController = new CoordinatorController(
@@ -32,7 +34,8 @@ const coordinatorController = new CoordinatorController(
   getAllCoordinatorsUseCase,
   getCoordinatorByIdUseCase,
   getCoordinatorByUserIdUseCase,
-  updateCoordinatorUseCase
+  updateCoordinatorUseCase,
+  deleteCoordinatorUseCase
 );
 
 // Routes
@@ -191,5 +194,32 @@ coordinatorRoutes.get('/user/:userId', authMiddleware, async (req, res) => { awa
  *         description: Error del servidor
  */
 coordinatorRoutes.put('/:id', authMiddleware, async (req, res) => { await coordinatorController.update(req, res); });
+
+/**
+ * @swagger
+ * /api/coordinators/{id}:
+ *   delete:
+ *     summary: Eliminar coordinador (eliminado lógico)
+ *     tags: [Coordinadores]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del coordinador
+ *     responses:
+ *       204:
+ *         description: Coordinador eliminado exitosamente
+ *       404:
+ *         description: Coordinador no encontrado
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+coordinatorRoutes.delete('/:id', authMiddleware, async (req, res) => { await coordinatorController.delete(req, res); });
 
 export { coordinatorRoutes };

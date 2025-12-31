@@ -5,6 +5,7 @@ import { GetAllEventsUseCase } from '../../../application/use-cases/event/GetAll
 import { GetEventByIdUseCase } from '../../../application/use-cases/event/GetEventByIdUseCase';
 import { GetEventsByCreatorIdUseCase } from '../../../application/use-cases/event/GetEventsByCreatorIdUseCase';
 import { UpdateEventUseCase } from '../../../application/use-cases/event/UpdateEventUseCase';
+import { DeleteEventUseCase } from '../../../application/use-cases/event/DeleteEventUseCase';
 import { PrismaEventRepository } from '../../../infrastructure/repositories/PrismaEventRepository';
 import { PrismaUserRepository } from '../../../infrastructure/repositories/PrismaUserRepository';
 import { authMiddleware } from '../middlewares/authMiddleware';
@@ -22,6 +23,7 @@ const getAllEventsUseCase = new GetAllEventsUseCase(eventRepository);
 const getEventByIdUseCase = new GetEventByIdUseCase(eventRepository);
 const getEventsByCreatorIdUseCase = new GetEventsByCreatorIdUseCase(eventRepository);
 const updateEventUseCase = new UpdateEventUseCase(eventRepository);
+const deleteEventUseCase = new DeleteEventUseCase(eventRepository);
 
 // Controller
 const eventController = new EventController(
@@ -29,7 +31,8 @@ const eventController = new EventController(
   getAllEventsUseCase,
   getEventByIdUseCase,
   getEventsByCreatorIdUseCase,
-  updateEventUseCase
+  updateEventUseCase,
+  deleteEventUseCase
 );
 
 // Routes

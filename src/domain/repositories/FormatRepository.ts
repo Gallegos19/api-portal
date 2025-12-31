@@ -6,5 +6,6 @@ export interface FormatRepository {
   findAll(): Promise<Format[]>;
   save(format: Format): Promise<Format>;
   update(format: Format): Promise<Format>;
+  softDelete(id: string): Promise<void>;
   delete(id: string): Promise<void>;
 }

@@ -3,6 +3,7 @@ import { CreateRegionUseCase } from '../../../application/use-cases/region/Creat
 import { GetAllRegionsUseCase } from '../../../application/use-cases/region/GetAllRegionsUseCase';
 import { GetRegionByIdUseCase } from '../../../application/use-cases/region/GetRegionByIdUseCase';
 import { UpdateRegionUseCase } from '../../../application/use-cases/region/UpdateRegionUseCase';
+import { DeleteRegionUseCase } from '../../../application/use-cases/region/DeleteRegionUseCase';
 import { ResourceNotFoundError } from '../../../shared/errors/CustomErrors';
 
 export class RegionController {
@@ -10,7 +11,8 @@ export class RegionController {
     private readonly createRegionUseCase: CreateRegionUseCase,
     private readonly getAllRegionsUseCase: GetAllRegionsUseCase,
     private readonly getRegionByIdUseCase: GetRegionByIdUseCase,
-    private readonly updateRegionUseCase: UpdateRegionUseCase
+    private readonly updateRegionUseCase: UpdateRegionUseCase,
+    private readonly deleteRegionUseCase: DeleteRegionUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<Response> {
@@ -87,6 +89,20 @@ export class RegionController {
         return res.status(404).json({ message: error.message });
       }
       console.error('Error updating region:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async delete(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      await this.deleteRegionUseCase.execute(id);
+      return res.status(204).send();
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error('Error deleting region:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   }
