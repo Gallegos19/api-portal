@@ -40,14 +40,17 @@ const userController = new UserController(createUserUseCase, getAllUsersUseCase,
  *           schema:
  *             type: object
  *             required:
- *               - name
+ *               - first_name
+ *               - last_name
  *               - email
  *               - password
- *               - role
  *             properties:
- *               name:
+ *               first_name:
  *                 type: string
- *                 example: Juan Pérez
+ *                 example: Juan
+ *               last_name:
+ *                 type: string
+ *                 example: Pérez
  *               email:
  *                 type: string
  *                 format: email
@@ -56,9 +59,22 @@ const userController = new UserController(createUserUseCase, getAllUsersUseCase,
  *                 type: string
  *                 format: password
  *                 example: password123
+ *               birth_date:
+ *                 type: string
+ *                 format: date-time
+ *                 example: 2000-01-15T00:00:00.000Z
+ *               sex:
+ *                 type: string
+ *                 example: M
+ *               phone:
+ *                 type: string
+ *                 example: +1234567890
  *               role:
  *                 type: string
- *                 example: USER
+ *                 example: intern
+ *               status_id:
+ *                 type: string
+ *                 example: 123e4567-e89b-12d3-a456-426614174000
  *     responses:
  *       201:
  *         description: Usuario creado exitosamente
