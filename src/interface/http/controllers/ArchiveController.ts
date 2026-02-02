@@ -21,13 +21,20 @@ export class ArchiveController {
 
   async create(req: Request, res: Response): Promise<Response> {
     try {
-      const { file_name, file_type, mime_type, storage_url, uploaded_by } = req.body;
+      // Verificar que se haya subido un archivo
+      if (!req.file) {
+        return res.status(400).json({ message: 'No se proporcionó ningún archivo' });
+      }
 
+      // Extraer información del archivo y datos adicionales del body
+      const { file_type, folder, uploaded_by } = req.body;
+      
       const archive = await this.createArchiveUseCase.execute({
-        file_name,
-        file_type,
-        mime_type,
-        storage_url,
+        file_buffer: req.file.buffer,
+        file_name: req.file.originalname,
+        mime_type: req.file.mimetype,
+        file_type: file_type,
+        folder: folder,
         uploaded_by: uploaded_by || req.user?.userId // Use authenticated user if not specified
       });
 

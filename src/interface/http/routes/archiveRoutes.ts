@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import multer from 'multer';
 import { ArchiveController } from '../controllers/ArchiveController';
 import { CreateArchiveUseCase } from '../../../application/use-cases/archive/CreateArchiveUseCase';
 import { GetAllArchivesUseCase } from '../../../application/use-cases/archive/GetAllArchivesUseCase';
@@ -10,15 +11,25 @@ import { DeleteArchiveUseCase } from '../../../application/use-cases/archive/Del
 import { PrismaArchiveRepository } from '../../../infrastructure/repositories/PrismaArchiveRepository';
 import { PrismaUserRepository } from '../../../infrastructure/repositories/PrismaUserRepository';
 import { authMiddleware } from '../middlewares/authMiddleware';
+import { storageService } from '../../../shared/config/storage';
 
 const archiveRoutes = Router();
+
+// Configurar Multer para almacenar archivos en memoria
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 50 * 1024 * 1024, // Límite de 50MB
+  }
+});
 
 // Dependencies
 const archiveRepository = new PrismaArchiveRepository();
 const userRepository = new PrismaUserRepository();
 const createArchiveUseCase = new CreateArchiveUseCase(
   archiveRepository,
-  userRepository
+  userRepository,
+  storageService
 );
 const getAllArchivesUseCase = new GetAllArchivesUseCase(archiveRepository);
 const getArchiveByIdUseCase = new GetArchiveByIdUseCase(archiveRepository);
@@ -44,30 +55,34 @@ const archiveController = new ArchiveController(
  * @swagger
  * /api/archives:
  *   post:
- *     summary: Crear un nuevo archivo
+ *     summary: Subir un nuevo archivo
  *     tags: [Archivos]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
- *               - fileName
- *               - fileType
- *               - fileUrl
- *               - uploaderUserId
+ *               - file
+ *               - uploaded_by
  *             properties:
- *               fileName:
+ *               file:
  *                 type: string
- *               fileType:
+ *                 format: binary
+ *                 description: Archivo a subir
+ *               file_type:
  *                 type: string
- *               fileUrl:
+ *                 description: Tipo de archivo (ej. 'documento', 'imagen', etc.)
+ *               folder:
  *                 type: string
- *               uploaderUserId:
+ *                 description: Carpeta donde almacenar (ej. 'documentos', 'fotos')
+ *                 default: archives
+ *               uploaded_by:
  *                 type: string
+ *                 description: ID del usuario que sube el archivo
  *     responses:
  *       201:
  *         description: Archivo creado exitosamente
@@ -75,6 +90,8 @@ const archiveController = new ArchiveController(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Archive'
+ *       400:
+ *         description: No se proporcionó archivo o datos inválidos
  *       401:
  *         description: No autorizado
  *       500:
@@ -98,7 +115,7 @@ const archiveController = new ArchiveController(
  *       500:
  *         description: Error del servidor
  */
-archiveRoutes.post('/', authMiddleware, async (req, res) => { await archiveController.create(req, res); });
+archiveRoutes.post('/', authMiddleware, upload.single('file'), async (req, res) => { await archiveController.create(req, res); });
 archiveRoutes.get('/', authMiddleware, async (req, res) => { await archiveController.getAll(req, res); });
 
 /**

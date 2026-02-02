@@ -3,11 +3,13 @@ import { ArchiveRepository } from "../../../domain/repositories/ArchiveRepositor
 import { UserRepository } from "../../../domain/repositories/UserRepository";
 import { CreateArchiveDTO } from "../../dto/archive/CreateArchiveDTO";
 import { ResourceNotFoundError } from "../../../shared/errors/CustomErrors";
+import { StorageService } from "../../interfaces/StorageService";
 
 export class CreateArchiveUseCase {
   constructor(
     private archiveRepository: ArchiveRepository,
-    private userRepository: UserRepository
+    private userRepository: UserRepository,
+    private storageService: StorageService
   ) {}
 
   async execute(data: CreateArchiveDTO): Promise<Archive> {
@@ -18,12 +20,23 @@ export class CreateArchiveUseCase {
       throw new ResourceNotFoundError('User', data.uploaded_by);
     }
     
+    // Upload file to R2 storage
+    const folder = data.folder || 'archives';
+    const uniqueFileName = `${Date.now()}-${data.file_name}`;
+    
+    const storageUrl = await this.storageService.uploadFile(
+      data.file_buffer,
+      uniqueFileName,
+      folder,
+      data.mime_type
+    );
+    
     // Create archive entity
     const archive = Archive.create({
       file_name: data.file_name,
       file_type: data.file_type,
       mime_type: data.mime_type,
-      storage_url: data.storage_url,
+      storage_url: storageUrl,
       uploaded_by: data.uploaded_by
     });
     
