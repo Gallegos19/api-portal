@@ -13,6 +13,7 @@ export class CreateDocumentUseCase {
     const document = Document.create({
       title: data.title,
       description: data.description,
+      document_type: data.document_type,
       id_intern: data.id_intern,
       id_archive: data.id_archive
     });

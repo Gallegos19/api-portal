@@ -7,6 +7,7 @@ export interface DocumentProps {
     created_at: Date;
     status_id?: string;
     school_year_id?: string;
+    document_type?: 'personal' | 'academico';
   }
   
   export class Document {
@@ -48,6 +49,10 @@ export interface DocumentProps {
     return this.props.school_year_id;
   }
 
+  get documentType(): 'personal' | 'academico' | undefined {
+    return this.props.document_type;
+  }
+
   // Methods to update properties
   updateTitle(title: string): void {
     this.props.title = title;
@@ -63,6 +68,10 @@ export interface DocumentProps {
 
   updateSchoolYearId(schoolYearId: string): void {
     this.props.school_year_id = schoolYearId;
+  }
+
+  updateDocumentType(documentType: 'personal' | 'academico'): void {
+    this.props.document_type = documentType;
   }
 
   // Static factory method

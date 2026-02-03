@@ -17,6 +17,7 @@ export class UpdateDocumentUseCase {
     // Update document properties
     if (data.title) document.updateTitle(data.title);
     if (data.description) document.updateDescription(data.description);
+    if (data.document_type) document.updateDocumentType(data.document_type);
 
     return this.documentRepository.update(document);
   }

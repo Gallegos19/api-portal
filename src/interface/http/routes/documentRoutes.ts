@@ -48,14 +48,25 @@ const documentController = new DocumentController(
  *             type: object
  *             required:
  *               - title
- *               - internId
  *             properties:
  *               title:
  *                 type: string
+ *                 description: Título del documento
  *               description:
  *                 type: string
- *               internId:
+ *                 description: Descripción del documento
+ *               id_intern:
  *                 type: string
+ *                 description: ID del becario relacionado
+ *               id_archive:
+ *                 type: string
+ *                 description: ID del archivo en R2 (archive) asociado
+ *               status_id:
+ *                 type: string
+ *                 description: ID del estado del documento
+ *               school_year_id:
+ *                 type: string
+ *                 description: ID del año escolar
  *     responses:
  *       201:
  *         description: Documento creado exitosamente
@@ -63,6 +74,8 @@ const documentController = new DocumentController(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Document'
+ *       404:
+ *         description: Recurso no encontrado
  *       401:
  *         description: No autorizado
  *       500:
@@ -144,8 +157,14 @@ documentRoutes.get('/:id', authMiddleware, async (req, res) => { await documentC
  *             properties:
  *               title:
  *                 type: string
+ *                 description: Título del documento
  *               description:
  *                 type: string
+ *                 description: Descripción del documento
+ *               document_type:
+ *                 type: string
+ *                 enum: [personal, academico]
+ *                 description: Tipo de documento (personal o académico)
  *     responses:
  *       200:
  *         description: Documento actualizado exitosamente

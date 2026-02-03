@@ -92,6 +92,7 @@ model Document {
   id             String      @id @default(uuid())
   title          String
   description    String?
+  document_type  String?     // 'personal' o 'academico'
   id_intern      String?
   id_archive     String?
   status_id      String?

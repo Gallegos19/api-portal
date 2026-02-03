@@ -19,11 +19,12 @@ export class DocumentController {
 
   async create(req: Request, res: Response): Promise<Response> {
     try {
-      const { title, description, id_intern, id_archive } = req.body;
+      const { title, description, document_type, id_intern, id_archive } = req.body;
 
       const document = await this.createDocumentUseCase.execute({
         title,
         description,
+        document_type,
         id_intern,
         id_archive
       });
@@ -32,6 +33,7 @@ export class DocumentController {
         id: document.id,
         title: document.title,
         description: document.description,
+        document_type: document.documentType,
         id_intern: document.internId,
         id_archive: document.archiveId,
         created_at: document.createdAt
@@ -54,6 +56,7 @@ export class DocumentController {
         id: document.id,
         title: document.title,
         description: document.description,
+        document_type: document.documentType,
         id_intern: document.internId,
         id_archive: document.archiveId,
         created_at: document.createdAt
@@ -73,6 +76,7 @@ export class DocumentController {
         id: document.id,
         title: document.title,
         description: document.description,
+        document_type: document.documentType,
         id_intern: document.internId,
         id_archive: document.archiveId,
         created_at: document.createdAt
@@ -95,6 +99,7 @@ export class DocumentController {
         id: document.id,
         title: document.title,
         description: document.description,
+        document_type: document.documentType,
         id_intern: document.internId,
         id_archive: document.archiveId,
         created_at: document.createdAt
@@ -108,17 +113,19 @@ export class DocumentController {
   async update(req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
-      const { title, description } = req.body;
+      const { title, description, document_type } = req.body;
 
       const document = await this.updateDocumentUseCase.execute(id, {
         title,
-        description
+        description,
+        document_type
       });
 
       return res.status(200).json({
         id: document.id,
         title: document.title,
         description: document.description,
+        document_type: document.documentType,
         id_intern: document.internId,
         id_archive: document.archiveId,
         created_at: document.createdAt
