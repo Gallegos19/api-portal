@@ -61,18 +61,15 @@ const subprojectController = new SubprojectController(
  *               - name
  *               - regionId
  *             properties:
- *               name:
+ *               name_subproject:
  *                 type: string
- *               description:
+ *               id_region:
  *                 type: string
- *               regionId:
+ *               id_cordinator:
  *                 type: string
- *               coordinatorId:
+ *               id_social_facilitator:
  *                 type: string
- *               socialFacilitatorIds:
- *                 type: array
- *                 items:
- *                   type: string
+ *              
  *     responses:
  *       201:
  *         description: Subproyecto creado exitosamente

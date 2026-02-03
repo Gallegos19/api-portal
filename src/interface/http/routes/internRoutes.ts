@@ -55,14 +55,52 @@ const internController = new InternController(
  *           schema:
  *             type: object
  *             required:
- *               - userId
+ *               - id_user
  *             properties:
- *               userId:
+ *               chid:
  *                 type: string
- *               socialFacilitatorId:
+ *                 description: CHID del interno
+ *               id_user:
  *                 type: string
- *               subprojectId:
+ *                 description: ID del usuario asociado
+ *               status:
  *                 type: string
+ *                 description: Estado del interno
+ *               address:
+ *                 type: string
+ *                 description: Dirección del interno
+ *               education_level:
+ *                 type: string
+ *                 description: Nivel educativo
+ *               career_name:
+ *                 type: string
+ *                 description: Nombre de la carrera
+ *               grade:
+ *                 type: string
+ *                 description: Grado académico
+ *               name_tutor:
+ *                 type: string
+ *                 description: Nombre del tutor
+ *               service:
+ *                 type: string
+ *                 description: Servicio que realiza
+ *               documentation:
+ *                 type: string
+ *                 description: Documentación
+ *               id_subproject:
+ *                 type: string
+ *                 description: ID del subproyecto
+ *               id_social_facilitator:
+ *                 type: string
+ *                 description: ID del facilitador social
+ *               start_date:
+ *                 type: string
+ *                 format: date-time
+ *                 description: Fecha de inicio
+ *               end_date:
+ *                 type: string
+ *                 format: date-time
+ *                 description: Fecha de finalización
  *     responses:
  *       201:
  *         description: Interno creado exitosamente
@@ -70,6 +108,8 @@ const internController = new InternController(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Intern'
+ *       404:
+ *         description: Usuario no encontrado
  *       401:
  *         description: No autorizado
  *       500:

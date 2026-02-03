@@ -60,12 +60,12 @@ const socialFacilitatorController = new SocialFacilitatorController(
  *           schema:
  *             type: object
  *             required:
- *               - userId
- *               - regionId
+ *               - id_user
+ *               - id_region
  *             properties:
- *               userId:
+ *               id_user:
  *                 type: string
- *               regionId:
+ *               id_region:
  *                 type: string
  *     responses:
  *       201:

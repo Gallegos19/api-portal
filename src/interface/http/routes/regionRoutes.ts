@@ -46,12 +46,10 @@ const regionController = new RegionController(
  *             required:
  *               - name
  *             properties:
- *               name:
+ *               name_region:
  *                 type: string
  *                 example: Región Norte
- *               description:
- *                 type: string
- *                 example: Región del norte del país
+ *             
  *     responses:
  *       201:
  *         description: Región creada exitosamente

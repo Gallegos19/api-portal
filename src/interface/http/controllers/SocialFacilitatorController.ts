@@ -23,6 +23,15 @@ export class SocialFacilitatorController {
     try {
       const { id_user, id_region } = req.body;
 
+      // Validar campos requeridos
+      if (!id_user) {
+        return res.status(400).json({ message: 'El campo id_user es requerido' });
+      }
+      
+      if (!id_region) {
+        return res.status(400).json({ message: 'El campo id_region es requerido' });
+      }
+
       const socialFacilitator = await this.createSocialFacilitatorUseCase.execute({
         id_user,
         id_region

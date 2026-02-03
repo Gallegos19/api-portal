@@ -31,13 +31,18 @@ export class ArchiveController {
       // Extraer información del archivo y datos adicionales del body
       const { file_type, folder, uploaded_by } = req.body;
       
+      // Validar que uploaded_by esté presente
+      if (!uploaded_by) {
+        return res.status(400).json({ message: 'El campo uploaded_by es requerido' });
+      }
+      
       const archive = await this.createArchiveUseCase.execute({
         file_buffer: req.file.buffer,
         file_name: req.file.originalname,
         mime_type: req.file.mimetype,
         file_type: file_type,
         folder: folder,
-        uploaded_by: uploaded_by || req.user?.userId // Use authenticated user if not specified
+        uploaded_by: uploaded_by
       });
 
       return res.status(201).json({
