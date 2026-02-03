@@ -6,6 +6,7 @@ import { GetArchivesByUploaderUserIdUseCase } from '../../../application/use-cas
 import { GetArchivesByFileTypeUseCase } from '../../../application/use-cases/archive/GetArchivesByFileTypeUseCase';
 import { UpdateArchiveUseCase } from '../../../application/use-cases/archive/UpdateArchiveUseCase';
 import { DeleteArchiveUseCase } from '../../../application/use-cases/archive/DeleteArchiveUseCase';
+import { GetArchiveSignedUrlUseCase } from '../../../application/use-cases/archive/GetArchiveSignedUrlUseCase';
 import { ResourceNotFoundError } from '../../../shared/errors/CustomErrors';
 
 export class ArchiveController {
@@ -16,7 +17,8 @@ export class ArchiveController {
     private readonly getArchivesByUploaderUserIdUseCase: GetArchivesByUploaderUserIdUseCase,
     private readonly getArchivesByFileTypeUseCase: GetArchivesByFileTypeUseCase,
     private readonly updateArchiveUseCase: UpdateArchiveUseCase,
-    private readonly deleteArchiveUseCase: DeleteArchiveUseCase
+    private readonly deleteArchiveUseCase: DeleteArchiveUseCase,
+    private readonly getArchiveSignedUrlUseCase: GetArchiveSignedUrlUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<Response> {
@@ -165,6 +167,26 @@ export class ArchiveController {
         return res.status(404).json({ message: error.message });
       }
       console.error('Error updating archive:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async getSignedUrl(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      const expiresIn = req.query.expiresIn ? parseInt(req.query.expiresIn as string) : 3600; // Default 1 hora
+      
+      const signedUrl = await this.getArchiveSignedUrlUseCase.execute(id, expiresIn);
+      
+      return res.status(200).json({
+        signed_url: signedUrl,
+        expires_in: expiresIn
+      });
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error('Error getting signed URL:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   }

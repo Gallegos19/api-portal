@@ -6,6 +6,7 @@ import {
   ListObjectsV2Command,
   HeadObjectCommand,
 } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { StorageService } from "../../application/interfaces/StorageService";
 
 /**
@@ -42,6 +43,7 @@ export class R2StorageService implements StorageService {
         accessKeyId,
         secretAccessKey,
       },
+      forcePathStyle: true, // IMPORTANTE: R2 requiere path-style URLs
     });
   }
 
@@ -146,9 +148,35 @@ export class R2StorageService implements StorageService {
 
   /**
    * Obtiene la URL pública de un archivo
+   * Nota: Esta URL NO funcionará directamente si el bucket es privado.
+   * Usa getSignedFileUrl() para obtener URLs con acceso temporal.
    */
   getFileUrl(fileKey: string): string {
-    return `${this.publicUrl}/${this.bucketName}/${fileKey}`;
+    // Retornamos solo la clave del archivo, no una URL completa
+    // ya que el bucket es privado y necesita URLs firmadas
+    return fileKey;
+  }
+
+  /**
+   * Genera una URL firmada con acceso temporal al archivo
+   * @param fileKey - Clave/ruta del archivo
+   * @param expiresIn - Tiempo de expiración en segundos (default: 1 hora)
+   * @returns URL firmada con acceso temporal
+   */
+  async getSignedFileUrl(fileKey: string, expiresIn: number = 3600): Promise<string> {
+    try {
+      const command = new GetObjectCommand({
+        Bucket: this.bucketName,
+        Key: fileKey,
+      });
+
+      // Generar URL firmada con tiempo de expiración
+      const signedUrl = await getSignedUrl(this.s3Client, command, { expiresIn });
+      return signedUrl;
+    } catch (error) {
+      console.error("Error al generar URL firmada:", error);
+      throw new Error(`No se pudo generar la URL firmada: ${error instanceof Error ? error.message : "Error desconocido"}`);
+    }
   }
 
   /**

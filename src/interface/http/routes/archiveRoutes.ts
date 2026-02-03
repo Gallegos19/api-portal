@@ -8,6 +8,7 @@ import { GetArchivesByUploaderUserIdUseCase } from '../../../application/use-cas
 import { GetArchivesByFileTypeUseCase } from '../../../application/use-cases/archive/GetArchivesByFileTypeUseCase';
 import { UpdateArchiveUseCase } from '../../../application/use-cases/archive/UpdateArchiveUseCase';
 import { DeleteArchiveUseCase } from '../../../application/use-cases/archive/DeleteArchiveUseCase';
+import { GetArchiveSignedUrlUseCase } from '../../../application/use-cases/archive/GetArchiveSignedUrlUseCase';
 import { PrismaArchiveRepository } from '../../../infrastructure/repositories/PrismaArchiveRepository';
 import { PrismaUserRepository } from '../../../infrastructure/repositories/PrismaUserRepository';
 import { authMiddleware } from '../middlewares/authMiddleware';
@@ -37,6 +38,10 @@ const getArchivesByUploaderUserIdUseCase = new GetArchivesByUploaderUserIdUseCas
 const getArchivesByFileTypeUseCase = new GetArchivesByFileTypeUseCase(archiveRepository);
 const updateArchiveUseCase = new UpdateArchiveUseCase(archiveRepository);
 const deleteArchiveUseCase = new DeleteArchiveUseCase(archiveRepository);
+const getArchiveSignedUrlUseCase = new GetArchiveSignedUrlUseCase(
+  archiveRepository,
+  storageService
+);
 
 // Controller
 const archiveController = new ArchiveController(
@@ -46,7 +51,8 @@ const archiveController = new ArchiveController(
   getArchivesByUploaderUserIdUseCase,
   getArchivesByFileTypeUseCase,
   updateArchiveUseCase,
-  deleteArchiveUseCase
+  deleteArchiveUseCase,
+  getArchiveSignedUrlUseCase
 );
 
 // Routes
@@ -117,6 +123,50 @@ const archiveController = new ArchiveController(
  */
 archiveRoutes.post('/', authMiddleware, upload.single('file'), async (req, res) => { await archiveController.create(req, res); });
 archiveRoutes.get('/', authMiddleware, async (req, res) => { await archiveController.getAll(req, res); });
+
+/**
+ * @swagger
+ * /api/archives/{id}/signed-url:
+ *   get:
+ *     summary: Obtener URL firmada para acceder al archivo
+ *     tags: [Archivos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del archivo
+ *       - in: query
+ *         name: expiresIn
+ *         schema:
+ *           type: integer
+ *           default: 3600
+ *         description: Tiempo de expiración en segundos (default 3600 = 1 hora)
+ *     responses:
+ *       200:
+ *         description: URL firmada generada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 signed_url:
+ *                   type: string
+ *                   description: URL firmada con acceso temporal
+ *                 expires_in:
+ *                   type: integer
+ *                   description: Tiempo de expiración en segundos
+ *       404:
+ *         description: Archivo no encontrado
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
+archiveRoutes.get('/:id/signed-url', authMiddleware, async (req, res) => { await archiveController.getSignedUrl(req, res); });
 
 /**
  * @swagger

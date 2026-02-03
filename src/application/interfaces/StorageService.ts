@@ -47,6 +47,14 @@ export interface StorageService {
   getFileUrl(fileKey: string): string;
 
   /**
+   * Genera una URL firmada con acceso temporal al archivo (para buckets privados)
+   * @param fileKey - Clave/ruta del archivo
+   * @param expiresIn - Tiempo de expiración en segundos (default: 3600 = 1 hora)
+   * @returns URL firmada con acceso temporal
+   */
+  getSignedFileUrl(fileKey: string, expiresIn?: number): Promise<string>;
+
+  /**
    * Verifica si un archivo existe
    * @param fileKey - Clave/ruta del archivo
    * @returns true si el archivo existe

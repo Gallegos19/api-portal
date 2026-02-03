@@ -54,3 +54,4 @@ tmp/
 # Generated files
 prisma/
 
+SIGNED_URLS_GUIDE.md
