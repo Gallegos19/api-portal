@@ -8,7 +8,6 @@ import { UpdateTrainingUseCase } from '../../../application/use-cases/training/U
 import { DeleteTrainingUseCase } from '../../../application/use-cases/training/DeleteTrainingUseCase';
 import { PrismaTrainingRepository } from '../../../infrastructure/repositories/PrismaTrainingRepository';
 import { PrismaUserRepository } from '../../../infrastructure/repositories/PrismaUserRepository';
-import { PrismaArchiveRepository } from '../../../infrastructure/repositories/PrismaArchiveRepository';
 import { authMiddleware } from '../middlewares/authMiddleware';
 
 const trainingRoutes = Router();
@@ -16,11 +15,9 @@ const trainingRoutes = Router();
 // Dependencies
 const trainingRepository = new PrismaTrainingRepository();
 const userRepository = new PrismaUserRepository();
-const archiveRepository = new PrismaArchiveRepository();
 const createTrainingUseCase = new CreateTrainingUseCase(
   trainingRepository,
-  userRepository,
-  archiveRepository
+  userRepository
 );
 const getAllTrainingsUseCase = new GetAllTrainingsUseCase(trainingRepository);
 const getTrainingByIdUseCase = new GetTrainingByIdUseCase(trainingRepository);
@@ -55,18 +52,30 @@ const trainingController = new TrainingController(
  *           schema:
  *             type: object
  *             required:
- *               - name
- *               - creatorId
- *               - archiveId
+ *               - title
  *             properties:
- *               name:
+ *               title:
  *                 type: string
+ *                 description: Título de la capacitación
  *               description:
  *                 type: string
- *               creatorId:
+ *                 description: Descripción de la capacitación
+ *               url:
  *                 type: string
- *               archiveId:
+ *                 description: URL del recurso de capacitación (video, documento, etc.)
+ *               tiempo:
  *                 type: string
+ *                 description: Duración en formato HH:MM (ej. "3:30")
+ *                 example: "3:30"
+ *               target_audience:
+ *                 type: string
+ *                 description: Audiencia objetivo de la capacitación
+ *               status_id:
+ *                 type: string
+ *                 description: ID del estado
+ *               school_year_id:
+ *                 type: string
+ *                 description: ID del año escolar
  *     responses:
  *       201:
  *         description: Capacitación creada exitosamente
@@ -153,12 +162,28 @@ trainingRoutes.get('/:id', authMiddleware, async (req, res) => { await trainingC
  *           schema:
  *             type: object
  *             properties:
- *               name:
+ *               title:
  *                 type: string
+ *                 description: Título de la capacitación
  *               description:
  *                 type: string
- *               id_archive:
+ *                 description: Descripción de la capacitación
+ *               url:
  *                 type: string
+ *                 description: URL del recurso de capacitación
+ *               tiempo:
+ *                 type: string
+ *                 description: Duración en formato HH:MM (ej. "3:30")
+ *                 example: "3:30"
+ *               target_audience:
+ *                 type: string
+ *                 description: Audiencia objetivo
+ *               status_id:
+ *                 type: string
+ *                 description: ID del estado
+ *               school_year_id:
+ *                 type: string
+ *                 description: ID del año escolar
  *     responses:
  *       200:
  *         description: Capacitación actualizada exitosamente

@@ -2,7 +2,8 @@ export interface TrainingProps {
     id: string;
     title: string;
     description?: string;
-    id_archive?: string;
+    url?: string;
+    tiempo?: Date; // Duración como TIME (solo hora:minuto:segundo)
     target_audience?: string;
     created_at: Date;
     created_by: string;
@@ -29,17 +30,21 @@ export interface TrainingProps {
       return this.props.description;
     }
   
-    get archiveId(): string | undefined {
-      return this.props.id_archive;
-    }
+  get url(): string | undefined {
+    return this.props.url;
+  }
+
+  get tiempo(): Date | undefined {
+    return this.props.tiempo;
+  }
+
+  get targetAudience(): string | undefined {
+    return this.props.target_audience;
+  }
   
-    get targetAudience(): string | undefined {
-      return this.props.target_audience;
-    }
-  
-    get createdAt(): Date {
-      return this.props.created_at;
-    }
+  get createdAt(): Date {
+    return this.props.created_at;
+  }
   
     get createdBy(): string {
       return this.props.created_by;
@@ -62,8 +67,12 @@ export interface TrainingProps {
     this.props.description = description;
   }
 
-  updateArchiveId(archiveId?: string): void {
-    this.props.id_archive = archiveId;
+  updateUrl(url?: string): void {
+    this.props.url = url;
+  }
+
+  updateTiempo(tiempo?: Date): void {
+    this.props.tiempo = tiempo;
   }
 
   updateTargetAudience(targetAudience?: string): void {
@@ -85,7 +94,8 @@ export interface TrainingProps {
       created_at: props.created_at || new Date(),
       title: props.title,
       description: props.description,
-      id_archive: props.id_archive,
+      url: props.url,
+      tiempo: props.tiempo,
       target_audience: props.target_audience,
       created_by: props.created_by,
       status_id: props.status_id,

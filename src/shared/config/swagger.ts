@@ -299,22 +299,88 @@ const options: Options = {
           properties: {
             id: {
               type: 'string',
+              description: 'ID único de la capacitación',
             },
-            name: {
+            title: {
               type: 'string',
+              description: 'Título de la capacitación',
             },
             description: {
               type: 'string',
+              description: 'Descripción de la capacitación',
             },
-            creatorId: {
+            url: {
               type: 'string',
+              description: 'URL del recurso de capacitación',
             },
-            archiveId: {
+            tiempo: {
               type: 'string',
+              format: 'time',
+              description: 'Duración en formato HH:MM (ej: "03:30")',
+              example: '03:30',
             },
-            createdAt: {
+            target_audience: {
+              type: 'string',
+              description: 'Audiencia objetivo',
+            },
+            created_by: {
+              type: 'string',
+              description: 'ID del creador',
+            },
+            status_id: {
+              type: 'string',
+              description: 'ID del estado',
+            },
+            school_year_id: {
+              type: 'string',
+              description: 'ID del año escolar',
+            },
+            created_at: {
               type: 'string',
               format: 'date-time',
+              description: 'Fecha de creación',
+            },
+          },
+        },
+        TrainingProgress: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              description: 'ID único del progreso',
+            },
+            id_training: {
+              type: 'string',
+              description: 'ID de la capacitación',
+            },
+            id_user: {
+              type: 'string',
+              description: 'ID del usuario',
+            },
+            completed: {
+              type: 'boolean',
+              description: 'Si la capacitación está completada',
+            },
+            progress_percentage: {
+              type: 'integer',
+              minimum: 0,
+              maximum: 100,
+              description: 'Porcentaje de progreso (0-100)',
+            },
+            completed_at: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Fecha de completado',
+            },
+            started_at: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Fecha de inicio',
+            },
+            last_viewed_at: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Última vez que se vio la capacitación',
             },
           },
         },

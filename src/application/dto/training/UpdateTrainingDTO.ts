@@ -1,7 +1,8 @@
 export interface UpdateTrainingDTO {
   title?: string;
   description?: string;
-  id_archive?: string;
+  url?: string;
+  tiempo?: Date | string; // Date o string en formato "HH:MM" que se convertirá
   target_audience?: string;
   status_id?: string;
   school_year_id?: string;

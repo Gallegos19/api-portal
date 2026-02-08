@@ -81,6 +81,7 @@ model User {
   photos          Photo[]          @relation("PhotoCreator")
   events          Event[]          @relation("EventCreator")
   success_stories SuccessStory[]   @relation("SuccessStoryCreator")
+  training_progress TrainingProgress[] @relation("UserTrainingProgress")
   intern          Intern?
   coordinator     Coordinator?
   social_facilitator SocialFacilitator?
@@ -146,7 +147,6 @@ model Archive {
   document       Document[]
   report         Report?
   format         Format?
-  training       Training?
   photo          Photo?
   
   @@map("archives")
@@ -175,7 +175,8 @@ model Training {
   id             String       @id @default(uuid())
   title          String
   description    String?
-  id_archive     String?      @unique
+  url            String?
+  tiempo         DateTime?    @db.Time // Duración en formato TIME (HH:MM:SS)
   target_audience String?
   status_id      String?
   school_year_id String?
@@ -185,10 +186,28 @@ model Training {
   // Relations
   status         Status?      @relation(fields: [status_id], references: [id])
   school_year    SchoolYear?  @relation(fields: [school_year_id], references: [id])
-  archive        Archive?     @relation(fields: [id_archive], references: [id])
   creator        User         @relation("TrainingCreator", fields: [created_by], references: [id])
+  progress       TrainingProgress[]
   
   @@map("trainings")
+}
+
+model TrainingProgress {
+  id             String       @id @default(uuid())
+  id_training    String
+  id_user        String
+  completed      Boolean      @default(false)
+  progress_percentage Int?    @default(0) // Porcentaje de progreso (0-100)
+  completed_at   DateTime?
+  started_at     DateTime     @default(now())
+  last_viewed_at DateTime     @default(now())
+  
+  // Relations
+  training       Training     @relation(fields: [id_training], references: [id], onDelete: Cascade)
+  user           User         @relation("UserTrainingProgress", fields: [id_user], references: [id], onDelete: Cascade)
+  
+  @@unique([id_training, id_user]) // Un usuario solo puede tener un registro de progreso por capacitación
+  @@map("training_progress")
 }
 
 model SuccessStory {

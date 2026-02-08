@@ -1,15 +1,21 @@
 import { Training } from "../../../domain/entities/Training";
 import { TrainingRepository } from "../../../domain/repositories/TrainingRepository";
 import { UserRepository } from "../../../domain/repositories/UserRepository";
-import { ArchiveRepository } from "../../../domain/repositories/ArchiveRepository";
 import { CreateTrainingDTO } from "../../dto/training/CreateTrainingDTO";
 import { ResourceNotFoundError } from "../../../shared/errors/CustomErrors";
+
+// Helper para convertir string HH:MM a Date
+function parseTimeString(timeStr: string): Date {
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  const date = new Date();
+  date.setHours(hours, minutes, 0, 0);
+  return date;
+}
 
 export class CreateTrainingUseCase {
   constructor(
     private trainingRepository: TrainingRepository,
-    private userRepository: UserRepository,
-    private archiveRepository: ArchiveRepository
+    private userRepository: UserRepository
   ) {}
 
   async execute(data: CreateTrainingDTO): Promise<Training> {
@@ -20,22 +26,22 @@ export class CreateTrainingUseCase {
       throw new ResourceNotFoundError('User', data.created_by);
     }
     
-    // Verify if archive exists when provided
-    if (data.id_archive) {
-      const archive = await this.archiveRepository.findById(data.id_archive);
-      
-      if (!archive) {
-        throw new ResourceNotFoundError('Archive', data.id_archive);
-      }
+    // Convert tiempo string to Date if needed
+    let tiempoDate: Date | undefined;
+    if (data.tiempo) {
+      tiempoDate = typeof data.tiempo === 'string' ? parseTimeString(data.tiempo) : data.tiempo;
     }
     
     // Create training entity
     const training = Training.create({
       title: data.title,
       description: data.description,
-      id_archive: data.id_archive,
+      url: data.url,
+      tiempo: tiempoDate,
       target_audience: data.target_audience,
-      created_by: data.created_by
+      created_by: data.created_by,
+      status_id: data.status_id,
+      school_year_id: data.school_year_id
     });
     
     // Save the training
