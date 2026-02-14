@@ -61,7 +61,7 @@ const reportController = new ReportController(
  *               - title
  *               - type
  *               - creatorId
- *               - archiveId
+ *               - id_archive
  *             properties:
  *               title:
  *                 type: string
@@ -69,7 +69,7 @@ const reportController = new ReportController(
  *                 type: string
  *               creatorId:
  *                 type: string
- *               archiveId:
+ *               id_archive:
  *                 type: string
  *     responses:
  *       201:
