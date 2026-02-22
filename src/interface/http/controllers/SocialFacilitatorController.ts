@@ -61,11 +61,11 @@ export class SocialFacilitatorController {
   async getAll(req: Request, res: Response): Promise<Response> {
     try {
       const socialFacilitators = await this.getAllSocialFacilitatorsUseCase.execute();
-      
       return res.status(200).json(socialFacilitators.map(sf => ({
         id: sf.id,
         id_user: sf.userId,
-        id_region: sf.regionId
+        id_region: sf.regionId,
+        status_id: sf.statusId
       })));
     } catch (error) {
       console.error('Error getting social facilitators:', error);
@@ -81,7 +81,8 @@ export class SocialFacilitatorController {
       return res.status(200).json({
         id: socialFacilitator.id,
         id_user: socialFacilitator.userId,
-        id_region: socialFacilitator.regionId
+        id_region: socialFacilitator.regionId,
+        status_id: socialFacilitator.statusId
       });
     } catch (error) {
       if (error instanceof ResourceNotFoundError) {
@@ -100,7 +101,8 @@ export class SocialFacilitatorController {
       return res.status(200).json({
         id: socialFacilitator.id,
         id_user: socialFacilitator.userId,
-        id_region: socialFacilitator.regionId
+        id_region: socialFacilitator.regionId,
+        status_id: socialFacilitator.statusId
       });
     } catch (error) {
       if (error instanceof ResourceNotFoundError) {
@@ -119,7 +121,8 @@ export class SocialFacilitatorController {
       return res.status(200).json(socialFacilitators.map(sf => ({
         id: sf.id,
         id_user: sf.userId,
-        id_region: sf.regionId
+        id_region: sf.regionId,
+        status_id: sf.statusId
       })));
     } catch (error) {
       console.error('Error getting social facilitators by subproject ID:', error);
@@ -130,17 +133,19 @@ export class SocialFacilitatorController {
   async update(req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
-      const { id_user, id_region } = req.body;
+      const { id_user, id_region, status_id} = req.body;
 
       const socialFacilitator = await this.updateSocialFacilitatorUseCase.execute(id, {
         id_user,
-        id_region
+        id_region,
+        status_id
       });
 
       return res.status(200).json({
         id: socialFacilitator.id,
         id_user: socialFacilitator.userId,
-        id_region: socialFacilitator.regionId
+        id_region: socialFacilitator.regionId,
+        status_id: socialFacilitator.statusId
       });
     } catch (error) {
       if (error instanceof ResourceNotFoundError) {
