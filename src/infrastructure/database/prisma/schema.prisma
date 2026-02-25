@@ -333,7 +333,7 @@ model Subproject {
   name_subproject String
   id_region      String?
   id_social_facilitator String?
-  id_coordinator String?      @unique
+  id_coordinator String?
   status_id      String?
   
   // Relations
@@ -370,7 +370,7 @@ model Coordinator {
   status         Status?      @relation(fields: [status_id], references: [id])
   user           User         @relation(fields: [id_user], references: [id])
   region         Region       @relation(fields: [id_region], references: [id])
-  subproject     Subproject?
+  subprojects    Subproject[]
   
   @@map("coordinators")
 }

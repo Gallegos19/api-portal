@@ -17,9 +17,20 @@ export class SubprojectController {
     private readonly deleteSubprojectUseCase: DeleteSubprojectUseCase
   ) {}
 
+  private normalizeOptionalId(value: unknown): string | undefined {
+    if (typeof value !== 'string') return undefined;
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : undefined;
+  }
+
   async create(req: Request, res: Response): Promise<Response> {
     try {
-      const { name_subproject, id_region, id_social_facilitator, id_coordinator } = req.body;
+      const { name_subproject } = req.body;
+      const id_region = this.normalizeOptionalId(req.body.id_region);
+      const id_social_facilitator = this.normalizeOptionalId(req.body.id_social_facilitator);
+      const id_coordinator = this.normalizeOptionalId(
+        req.body.id_coordinator ?? req.body.id_cordinator ?? req.body.coordinator_id
+      );
 
       const subproject = await this.createSubprojectUseCase.execute({
         name_subproject,
@@ -38,12 +49,6 @@ export class SubprojectController {
     } catch (error) {
       if (error instanceof ResourceNotFoundError) {
         return res.status(404).json({ message: error.message });
-      }
-      
-      if (error instanceof Error) {
-        if (error.message.includes('already assigned')) {
-          return res.status(409).json({ message: error.message });
-        }
       }
       
       console.error('Error creating subproject:', error);
@@ -110,7 +115,12 @@ export class SubprojectController {
   async update(req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
-      const { name_subproject, id_region, id_social_facilitator, id_coordinator } = req.body;
+      const { name_subproject } = req.body;
+      const id_region = this.normalizeOptionalId(req.body.id_region);
+      const id_social_facilitator = this.normalizeOptionalId(req.body.id_social_facilitator);
+      const id_coordinator = this.normalizeOptionalId(
+        req.body.id_coordinator ?? req.body.id_cordinator ?? req.body.coordinator_id
+      );
 
       const subproject = await this.updateSubprojectUseCase.execute(id, {
         name_subproject,

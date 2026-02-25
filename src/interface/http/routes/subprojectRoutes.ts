@@ -65,7 +65,7 @@ const subprojectController = new SubprojectController(
  *                 type: string
  *               id_region:
  *                 type: string
- *               id_cordinator:
+ *               id_coordinator:
  *                 type: string
  *               id_social_facilitator:
  *                 type: string

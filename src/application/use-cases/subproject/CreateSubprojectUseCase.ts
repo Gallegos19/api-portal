@@ -14,47 +14,51 @@ export class CreateSubprojectUseCase {
     private socialFacilitatorRepository: SocialFacilitatorRepository
   ) {}
 
+  private normalizeOptionalId(value?: string): string | undefined {
+    if (typeof value !== 'string') return undefined;
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : undefined;
+  }
+
   async execute(data: CreateSubprojectDTO): Promise<Subproject> {
+    const idRegion = this.normalizeOptionalId(data.id_region);
+    const idSocialFacilitator = this.normalizeOptionalId(data.id_social_facilitator);
+    const idCoordinator = this.normalizeOptionalId(data.id_coordinator);
+
     // Verify if region exists when provided
-    if (data.id_region) {
-      const region = await this.regionRepository.findById(data.id_region);
+    if (idRegion) {
+      const region = await this.regionRepository.findById(idRegion);
       
       if (!region) {
-        throw new ResourceNotFoundError('Region', data.id_region);
+        throw new ResourceNotFoundError('Region', idRegion);
       }
     }
     
     // Verify if social facilitator exists when provided
-    if (data.id_social_facilitator) {
-      const socialFacilitator = await this.socialFacilitatorRepository.findById(data.id_social_facilitator);
+    if (idSocialFacilitator) {
+      const socialFacilitator = await this.socialFacilitatorRepository.findById(idSocialFacilitator);
       
       if (!socialFacilitator) {
-        throw new ResourceNotFoundError('Social Facilitator', data.id_social_facilitator);
+        throw new ResourceNotFoundError('Social Facilitator', idSocialFacilitator);
       }
     }
     
     // Verify if coordinator exists when provided
-    if (data.id_coordinator) {
-      const coordinator = await this.coordinatorRepository.findById(data.id_coordinator);
+    if (idCoordinator) {
+      const coordinator = await this.coordinatorRepository.findById(idCoordinator);
       
       if (!coordinator) {
-        throw new ResourceNotFoundError('Coordinator', data.id_coordinator);
+        throw new ResourceNotFoundError('Coordinator', idCoordinator);
       }
       
-      // Check if coordinator is already assigned to another subproject
-      const existingSubproject = await this.subprojectRepository.findByCoordinatorId(data.id_coordinator);
-      
-      if (existingSubproject) {
-        throw new Error(`Coordinator with ID ${data.id_coordinator} is already assigned to another subproject`);
-      }
     }
     
     // Create subproject entity
     const subproject = Subproject.create({
       name_subproject: data.name_subproject,
-      id_region: data.id_region,
-      id_social_facilitator: data.id_social_facilitator,
-      id_coordinator: data.id_coordinator
+      id_region: idRegion,
+      id_social_facilitator: idSocialFacilitator,
+      id_coordinator: idCoordinator
     });
     
     // Save the subproject
