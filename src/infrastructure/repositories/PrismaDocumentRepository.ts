@@ -56,7 +56,12 @@ export class PrismaDocumentRepository implements DocumentRepository {
 
   async findByInternId(internId: string): Promise<Document[]> {
     const documentRecords = await prisma.document.findMany({
-      where: { id_intern: internId },
+      where: {
+        id_intern: internId,
+        status: {
+          name: { not: 'Eliminado' }
+        }
+      },
       include: { 
         status: true,
         school_year: true
