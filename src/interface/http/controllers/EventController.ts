@@ -17,14 +17,24 @@ export class EventController {
     private readonly deleteEventUseCase: DeleteEventUseCase
   ) {}
 
+  private normalizeOptionalId(value: unknown): string | undefined {
+    if (typeof value !== 'string') return undefined;
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : undefined;
+  }
+
   async create(req: Request, res: Response): Promise<Response> {
     try {
       const { title, description } = req.body;
+      const status_id = this.normalizeOptionalId(req.body.status_id);
+      const school_year_id = this.normalizeOptionalId(req.body.school_year_id);
 
       const event = await this.createEventUseCase.execute({
         title,
         description,
-        created_by: req.user?.userId || '' // Use authenticated user
+        created_by: req.user?.userId || '', // Use authenticated user
+        status_id,
+        school_year_id
       });
 
       return res.status(201).json({
@@ -32,7 +42,9 @@ export class EventController {
         title: event.title,
         description: event.description,
         created_at: event.createdAt,
-        created_by: event.createdBy
+        created_by: event.createdBy,
+        status_id: event.statusId ?? null,
+        school_year_id: event.schoolYearId ?? null
       });
     } catch (error) {
       if (error instanceof ResourceNotFoundError) {
@@ -53,7 +65,9 @@ export class EventController {
         title: event.title,
         description: event.description,
         created_at: event.createdAt,
-        created_by: event.createdBy
+        created_by: event.createdBy,
+        status_id: event.statusId ?? null,
+        school_year_id: event.schoolYearId ?? null
       })));
     } catch (error) {
       console.error('Error getting events:', error);
@@ -71,7 +85,9 @@ export class EventController {
         title: event.title,
         description: event.description,
         created_at: event.createdAt,
-        created_by: event.createdBy
+        created_by: event.createdBy,
+        status_id: event.statusId ?? null,
+        school_year_id: event.schoolYearId ?? null
       });
     } catch (error) {
       if (error instanceof ResourceNotFoundError) {
@@ -92,7 +108,9 @@ export class EventController {
         title: event.title,
         description: event.description,
         created_at: event.createdAt,
-        created_by: event.createdBy
+        created_by: event.createdBy,
+        status_id: event.statusId ?? null,
+        school_year_id: event.schoolYearId ?? null
       })));
     } catch (error) {
       console.error('Error getting events by creator ID:', error);
@@ -104,10 +122,14 @@ export class EventController {
     try {
       const { id } = req.params;
       const { title, description } = req.body;
+      const status_id = this.normalizeOptionalId(req.body.status_id);
+      const school_year_id = this.normalizeOptionalId(req.body.school_year_id);
 
       const event = await this.updateEventUseCase.execute(id, {
         title,
-        description
+        description,
+        status_id,
+        school_year_id
       });
 
       return res.status(200).json({
@@ -115,7 +137,9 @@ export class EventController {
         title: event.title,
         description: event.description,
         created_at: event.createdAt,
-        created_by: event.createdBy
+        created_by: event.createdBy,
+        status_id: event.statusId ?? null,
+        school_year_id: event.schoolYearId ?? null
       });
     } catch (error) {
       if (error instanceof ResourceNotFoundError) {

@@ -17,6 +17,8 @@ export class UpdateEventUseCase {
     // Update event properties
     if (data.title) event.updateTitle(data.title);
     if (data.description !== undefined) event.updateDescription(data.description);
+    if (data.status_id !== undefined) event.updateStatusId(data.status_id);
+    if (data.school_year_id !== undefined) event.updateSchoolYearId(data.school_year_id);
 
     return this.eventRepository.update(event);
   }
