@@ -48,6 +48,17 @@ src/
    - Copia `.env.example` a `.env`
    - Actualiza las credenciales de la base de datos y otras configuraciones
 
+Variables sugeridas para limitar peticiones:
+```env
+# Límite global para todas las rutas /api
+RATE_LIMIT_WINDOW_MS=60000
+RATE_LIMIT_MAX_REQUESTS=120
+
+# Límite estricto para autenticación (/api/auth)
+AUTH_RATE_LIMIT_WINDOW_MS=60000
+AUTH_RATE_LIMIT_MAX_REQUESTS=8
+```
+
 4. Genera el cliente Prisma:
    ```bash
    npm run prisma:generate

@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import dotenv from 'dotenv';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from '../../shared/config/swagger';
 import { userRoutes } from './routes/userRoutes';
@@ -20,29 +21,50 @@ import { photoRoutes } from './routes/photoRoutes';
 import { eventRoutes } from './routes/eventRoutes';
 import { eventPhotoRoutes } from './routes/eventPhotoRoutes';
 import { successStoryRoutes } from './routes/successStoryRoutes';
+import { createRateLimitMiddleware } from './middlewares/rateLimitMiddleware';
+
+dotenv.config();
 
 const app = express();
+
+const parseNumber = (value: string | undefined, fallback: number): number => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+};
+
+const globalLimiter = createRateLimitMiddleware({
+  windowMs: parseNumber(process.env.RATE_LIMIT_WINDOW_MS, 60_000),
+  maxRequests: parseNumber(process.env.RATE_LIMIT_MAX_REQUESTS, 120),
+  message: 'Demasiadas peticiones. Intenta nuevamente en un momento.',
+});
+
+const authLimiter = createRateLimitMiddleware({
+  windowMs: parseNumber(process.env.AUTH_RATE_LIMIT_WINDOW_MS, 60_000),
+  maxRequests: parseNumber(process.env.AUTH_RATE_LIMIT_MAX_REQUESTS, 8),
+  message: 'Demasiados intentos de inicio de sesión. Intenta nuevamente en un momento.',
+});
 
 // Middlewares
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+app.use('/api', globalLimiter);
 
 // Swagger Documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-  customCss: '.swagger-ui .topbar { display: none }',
-  customSiteTitle: 'Portal API Documentation',
-}));
+// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+//   customCss: '.swagger-ui .topbar { display: none }',
+//   customSiteTitle: 'Portal API Documentation',
+// }));
 
 // Swagger JSON endpoint
-app.get('/api-docs.json', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.send(swaggerSpec);
-});
+// app.get('/api-docs.json', (req, res) => {
+//   res.setHeader('Content-Type', 'application/json');
+//   res.send(swaggerSpec);
+// });
 
 // Routes
 app.use('/api/users', userRoutes);
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/interns', internRoutes);
 app.use('/api/regions', regionRoutes);
