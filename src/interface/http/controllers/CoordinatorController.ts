@@ -29,7 +29,8 @@ export class CoordinatorController {
       return res.status(201).json({
         id: coordinator.id,
         id_user: coordinator.userId,
-        id_region: coordinator.regionId
+        id_region: coordinator.regionId,
+        status_id: coordinator.statusId ?? null
       });
     } catch (error) {
       if (error instanceof ResourceNotFoundError) {
@@ -54,7 +55,8 @@ export class CoordinatorController {
       return res.status(200).json(coordinators.map(coordinator => ({
         id: coordinator.id,
         id_user: coordinator.userId,
-        id_region: coordinator.regionId
+        id_region: coordinator.regionId,
+        status_id: coordinator.statusId ?? null
       })));
     } catch (error) {
       console.error('Error getting coordinators:', error);
@@ -70,7 +72,8 @@ export class CoordinatorController {
       return res.status(200).json({
         id: coordinator.id,
         id_user: coordinator.userId,
-        id_region: coordinator.regionId
+        id_region: coordinator.regionId,
+        status_id: coordinator.statusId ?? null
       });
     } catch (error) {
       if (error instanceof ResourceNotFoundError) {
@@ -89,7 +92,8 @@ export class CoordinatorController {
       return res.status(200).json({
         id: coordinator.id,
         id_user: coordinator.userId,
-        id_region: coordinator.regionId
+        id_region: coordinator.regionId,
+        status_id: coordinator.statusId ?? null
       });
     } catch (error) {
       if (error instanceof ResourceNotFoundError) {
@@ -113,7 +117,8 @@ export class CoordinatorController {
       return res.status(200).json({
         id: coordinator.id,
         id_user: coordinator.userId,
-        id_region: coordinator.regionId
+        id_region: coordinator.regionId,
+        status_id: coordinator.statusId ?? null
       });
     } catch (error) {
       if (error instanceof ResourceNotFoundError) {

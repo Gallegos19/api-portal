@@ -28,6 +28,7 @@ export class SubprojectController {
       const { name_subproject } = req.body;
       const id_region = this.normalizeOptionalId(req.body.id_region);
       const id_social_facilitator = this.normalizeOptionalId(req.body.id_social_facilitator);
+      const status_id = this.normalizeOptionalId(req.body.status_id);
       const id_coordinator = this.normalizeOptionalId(
         req.body.id_coordinator ?? req.body.id_cordinator ?? req.body.coordinator_id
       );
@@ -36,7 +37,8 @@ export class SubprojectController {
         name_subproject,
         id_region,
         id_social_facilitator,
-        id_coordinator
+        id_coordinator,
+        status_id
       });
 
       return res.status(201).json({
@@ -44,7 +46,8 @@ export class SubprojectController {
         name_subproject: subproject.nameSubproject,
         id_region: subproject.regionId,
         id_social_facilitator: subproject.socialFacilitatorId,
-        id_coordinator: subproject.coordinatorId
+        id_coordinator: subproject.coordinatorId,
+        status_id: subproject.statusId ?? null
       });
     } catch (error) {
       if (error instanceof ResourceNotFoundError) {
@@ -65,7 +68,8 @@ export class SubprojectController {
         name_subproject: subproject.nameSubproject,
         id_region: subproject.regionId,
         id_social_facilitator: subproject.socialFacilitatorId,
-        id_coordinator: subproject.coordinatorId
+        id_coordinator: subproject.coordinatorId,
+        status_id: subproject.statusId ?? null
       })));
     } catch (error) {
       console.error('Error getting subprojects:', error);
@@ -83,7 +87,8 @@ export class SubprojectController {
         name_subproject: subproject.nameSubproject,
         id_region: subproject.regionId,
         id_social_facilitator: subproject.socialFacilitatorId,
-        id_coordinator: subproject.coordinatorId
+        id_coordinator: subproject.coordinatorId,
+        status_id: subproject.statusId ?? null
       });
     } catch (error) {
       if (error instanceof ResourceNotFoundError) {
@@ -104,7 +109,8 @@ export class SubprojectController {
         name_subproject: subproject.nameSubproject,
         id_region: subproject.regionId,
         id_social_facilitator: subproject.socialFacilitatorId,
-        id_coordinator: subproject.coordinatorId
+        id_coordinator: subproject.coordinatorId,
+        status_id: subproject.statusId ?? null
       })));
     } catch (error) {
       console.error('Error getting subprojects by region ID:', error);
@@ -118,6 +124,7 @@ export class SubprojectController {
       const { name_subproject } = req.body;
       const id_region = this.normalizeOptionalId(req.body.id_region);
       const id_social_facilitator = this.normalizeOptionalId(req.body.id_social_facilitator);
+      const status_id = this.normalizeOptionalId(req.body.status_id);
       const id_coordinator = this.normalizeOptionalId(
         req.body.id_coordinator ?? req.body.id_cordinator ?? req.body.coordinator_id
       );
@@ -126,7 +133,8 @@ export class SubprojectController {
         name_subproject,
         id_region,
         id_social_facilitator,
-        id_coordinator
+        id_coordinator,
+        status_id
       });
 
       return res.status(200).json({
@@ -134,7 +142,8 @@ export class SubprojectController {
         name_subproject: subproject.nameSubproject,
         id_region: subproject.regionId,
         id_social_facilitator: subproject.socialFacilitatorId,
-        id_coordinator: subproject.coordinatorId
+        id_coordinator: subproject.coordinatorId,
+        status_id: subproject.statusId ?? null
       });
     } catch (error) {
       if (error instanceof ResourceNotFoundError) {

@@ -66,7 +66,8 @@ export interface SubprojectProps {
       name_subproject: props.name_subproject,
       id_region: props.id_region,
       id_social_facilitator: props.id_social_facilitator,
-      id_coordinator: props.id_coordinator
+      id_coordinator: props.id_coordinator,
+      status_id: props.status_id
     });
   }    // Method to convert entity to a plain object
     toJSON(): SubprojectProps {

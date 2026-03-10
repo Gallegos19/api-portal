@@ -19,6 +19,7 @@ export class UpdateSubprojectUseCase {
     if (data.id_region !== undefined) subproject.updateRegionId(data.id_region);
     if (data.id_social_facilitator !== undefined) subproject.updateSocialFacilitatorId(data.id_social_facilitator);
     if (data.id_coordinator !== undefined) subproject.updateCoordinatorId(data.id_coordinator);
+    if (data.status_id !== undefined) subproject.updateStatusId(data.status_id);
 
     return this.subprojectRepository.update(subproject);
   }

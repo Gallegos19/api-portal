@@ -58,7 +58,8 @@ export class CreateSubprojectUseCase {
       name_subproject: data.name_subproject,
       id_region: idRegion,
       id_social_facilitator: idSocialFacilitator,
-      id_coordinator: idCoordinator
+      id_coordinator: idCoordinator,
+      status_id: this.normalizeOptionalId(data.status_id)
     });
     
     // Save the subproject
