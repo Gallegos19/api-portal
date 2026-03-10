@@ -44,9 +44,15 @@ const authLimiter = createRateLimitMiddleware({
   message: 'Demasiados intentos de inicio de sesión. Intenta nuevamente en un momento.',
 });
 
+const corsOptions: cors.CorsOptions = {
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
 // Middlewares
 app.use(helmet());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use('/api', globalLimiter);
 
