@@ -37,11 +37,6 @@ export class PrismaCoordinatorRepository implements CoordinatorRepository {
 
   async findAll(): Promise<Coordinator[]> {
     const coordinatorRecords = await prisma.coordinator.findMany({
-      where: {
-        status: {
-          name: { not: 'Eliminado' }
-        }
-      },
       include: { status: true }
     });
 

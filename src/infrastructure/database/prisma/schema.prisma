@@ -350,11 +350,13 @@ model Region {
   id             String       @id @default(uuid())
   name_region    String
   status_id      String?
+  id_coordinator String?      @unique
   
   // Relations
   status         Status?      @relation(fields: [status_id], references: [id])
   subprojects    Subproject[]
-  coordinators   Coordinator[]
+  coordinators   Coordinator[] @relation("RegionById")
+  coordinator    Coordinator?  @relation("RegionByCoordinatorId", fields: [id_coordinator], references: [id])
   social_facilitators SocialFacilitator[]
   
   @@map("regions")
@@ -369,7 +371,8 @@ model Coordinator {
   // Relations
   status         Status?      @relation(fields: [status_id], references: [id])
   user           User         @relation(fields: [id_user], references: [id])
-  region         Region       @relation(fields: [id_region], references: [id])
+  region         Region       @relation("RegionById", fields: [id_region], references: [id])
+  coordinated_region Region?  @relation("RegionByCoordinatorId")
   subprojects    Subproject[]
   
   @@map("coordinators")

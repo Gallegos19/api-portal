@@ -46,7 +46,8 @@ export interface CoordinatorProps {
     return new Coordinator({
       id: props.id || crypto.randomUUID(),
       id_user: props.id_user,
-      id_region: props.id_region
+      id_region: props.id_region,
+      status_id: props.status_id
     });
   }    // Method to convert entity to a plain object
     toJSON(): CoordinatorProps {

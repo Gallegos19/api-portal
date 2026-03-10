@@ -109,17 +109,13 @@ const options: Options = {
               type: 'string',
               description: 'ID único de la región',
             },
-            name: {
+            name_region: {
               type: 'string',
               description: 'Nombre de la región',
             },
-            description: {
+            id_coordinator: {
               type: 'string',
-              description: 'Descripción de la región',
-            },
-            createdAt: {
-              type: 'string',
-              format: 'date-time',
+              description: 'ID del coordinador asignado a la región',
             },
           },
         },

@@ -16,6 +16,8 @@ export class UpdateRegionUseCase {
 
     // Update region properties
     if (data.name_region) region.updateNameRegion(data.name_region);
+    if (data.status_id !== undefined) region.updateStatusId(data.status_id);
+    if (data.id_coordinator !== undefined) region.updateCoordinatorId(data.id_coordinator);
 
     return this.regionRepository.update(region);
   }

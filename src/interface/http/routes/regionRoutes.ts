@@ -44,11 +44,15 @@ const regionController = new RegionController(
  *           schema:
  *             type: object
  *             required:
- *               - name
+ *               - name_region
+ *               - id_coordinator
  *             properties:
  *               name_region:
  *                 type: string
  *                 example: Región Norte
+ *               id_coordinator:
+ *                 type: string
+ *                 example: 4abf8a29-8bd6-4fa0-8cdc-a19bfc7f278c
  *             
  *     responses:
  *       201:
@@ -129,6 +133,8 @@ regionRoutes.get('/:id', async (req, res) => { await regionController.getById(re
  *             type: object
  *             properties:
  *               name_region:
+ *                 type: string
+ *               id_coordinator:
  *                 type: string
  *     responses:
  *       200:

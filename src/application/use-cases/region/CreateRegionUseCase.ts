@@ -17,7 +17,9 @@ export class CreateRegionUseCase {
     
     // Create region entity
     const region = Region.create({
-      name_region: data.name_region
+      name_region: data.name_region,
+      id_coordinator: data.id_coordinator,
+      status_id: data.status_id
     });
     
     // Save the region
